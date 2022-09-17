@@ -1,0 +1,15 @@
+/.idea/
+
+/data/dataset/
+
+/dataset_preparation/parsing/data/images/
+/dataset_preparation/parsing/geckodriver.log
+/dataset_preparation/parsing/__pycache__/
+
+/dataset_preparation/cleaning/data/images/
+/dataset_preparation/cleaning/data/dataset/
+/dataset_preparation/cleaning/__pycache__/
+
+/dataset_preparation/labeling/data/dataset_source/
+/dataset_preparation/labeling/data/dataset/
+/dataset_preparation/labeling/__pycache__/
