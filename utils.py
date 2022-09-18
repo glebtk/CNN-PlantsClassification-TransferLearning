@@ -56,7 +56,7 @@ def get_last_checkpoint():
         checkpoints = os.listdir(config.CHECKPOINT_DIR)
         checkpoints = [os.path.join(config.CHECKPOINT_DIR, d) for d in checkpoints]
         checkpoints = [d for d in checkpoints if os.path.isdir(d)]
-        checkpoints.sort(key=lambda x: os.path.getmtime(x))
+        checkpoints.sort(key=lambda x: os.path.getmtime(x))  # Сортировка по времени
 
         path_to_model = os.path.join(checkpoints[-1], config.CHECKPOINT_NAME)
 
@@ -73,8 +73,9 @@ def get_current_time():
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 
-def model_test(model):
+def model_test(model) -> float:
     """Проводит тестирование модели на тестовой выборке. Возвращает точность (accuracy)."""
+
     model = model.to(config.DEVICE)
 
     # Загружаем датасет
@@ -104,7 +105,7 @@ def model_test(model):
 
             for prediction, label in zip(predictions, labels):
                 # Если предсказание правильное,
-                if torch.argmax(prediction) == torch.argmax(label):
+                if torch.argmax(torch.softmax(prediction, dim=0)) == torch.argmax(label):
                     correct += 1  # засчитываем правильный ответ
 
     accuracy = correct / len(dataset)  # Точность = количество правильных ответов / общее количество изображений
