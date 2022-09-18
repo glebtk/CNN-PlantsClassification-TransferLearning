@@ -1,6 +1,9 @@
 /.idea/
+/__pycache__/
 
 /data/dataset/
+/checkpoints/
+/tb/
 
 /dataset_preparation/parsing/data/images/
 /dataset_preparation/parsing/geckodriver.log
@@ -13,3 +16,7 @@
 /dataset_preparation/labeling/data/dataset_source/
 /dataset_preparation/labeling/data/dataset/
 /dataset_preparation/labeling/__pycache__/
+
+__test.py
+aug_test.py
+train_old.py
