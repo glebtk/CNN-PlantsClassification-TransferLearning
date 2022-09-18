@@ -2,8 +2,6 @@ import torch
 import config
 import torch.nn as nn
 
-from torchsummary import summary
-
 
 class ConvBlock(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=1, padding_mode="zeros"):
@@ -49,12 +47,13 @@ class Model(nn.Module):
             conv_features = [64, 128, 256]
 
         if dense_features is None:
-            dense_features = [256, 128, 64]
+            dense_features = [256, 256, 128, 64]
 
         conv_layers = []
 
         for feature in conv_features:
             conv_layers.append(ConvBlock(in_channels, feature, stride=1))
+            conv_layers.append(ConvBlock(feature, feature, stride=1))
             conv_layers.append(ConvBlock(feature, feature, stride=1))
             conv_layers.append(ConvBlock(feature, feature, stride=1 if feature == conv_features[-1] else 2))
 
