@@ -17,7 +17,52 @@ from utils import get_last_checkpoint
 from dataset import CrimeanPlantsDataset
 
 
-def train():
+def train(model, opt, data_loader, num_epochs, writer, current_epoch=0, criterion=nn.CrossEntropyLoss()):
+
+    for epoch in range(current_epoch, num_epochs):
+
+        model.train()  # Переключение модели в режим обучения
+
+        total_loss = 0.0
+
+        for idx, (images, labels) in enumerate(tqdm(data_loader)):
+            images = images.to(config.DEVICE)
+            labels = labels.to(config.DEVICE)
+
+            # Получаем предсказания модели для текущего батча:
+            predictions = model(images)
+
+            # Вычисляем loss:
+            loss = criterion(predictions, labels)
+            total_loss += loss
+
+            # Обновляем веса модели:
+            opt.zero_grad()
+            loss.backward()
+            opt.step()
+
+        # После каждой эпохи тестируем модель:
+        model.eval()  # Переключение модели в режим тестирования
+        accuracy = model_test(model)
+
+        # Обновляем tensorboard:
+        writer.add_scalar("Accuracy", accuracy, global_step=epoch)
+        writer.add_scalar("Loss", total_loss, global_step=epoch)
+
+        # Сохраняем модель, если необходимо:
+        if config.SAVE_MODEL:
+            print("\033[32m=> Сохранение чекпоинта\033[0m")
+
+            # Создаем директорию для сохранения
+            dir_path = os.path.join(config.CHECKPOINT_DIR, get_current_time())
+            make_directory(dir_path)
+
+            # Сохраняем
+            model_path = os.path.join(dir_path, config.CHECKPOINT_NAME)
+            save_checkpoint(model, opt, model_path, epoch)
+
+
+def main():
     # Инициализируем модель:
     model = Model(in_channels=config.IN_CHANNELS, out_channels=config.OUT_CHANNELS).to(config.DEVICE)
 
@@ -35,7 +80,7 @@ def train():
     )
 
     data_loader = DataLoader(
-        dataset,
+        dataset=dataset,
         batch_size=config.BATCH_SIZE,
         shuffle=True,
         num_workers=config.NUM_WORKERS,
@@ -50,57 +95,15 @@ def train():
     else:
         current_epoch = 0
 
-    criterion = nn.CrossEntropyLoss()  # может быть надо добавить параметр weight (for unbalanced classes)
+    num_epochs = config.NUM_EPOCHS  # Количество эпох обучения
 
-    writer = SummaryWriter(f"/tb/train/{get_current_time()}")
+    writer = SummaryWriter(f"./tb/train/{get_current_time()}")  # Writer для TensorBoard. Имя - текущие дата и время
 
-    # ----- Цикл обучения ----- #
-    for epoch in range(current_epoch, config.NUM_EPOCHS):
+    # Обучаем модель:
+    train(model, opt, data_loader, num_epochs, writer, current_epoch=current_epoch)
 
-        total_loss = 0.0
-        for idx, (images, labels) in enumerate(tqdm(data_loader)):
-            images = images.to(config.DEVICE)
-            labels = labels.to(config.DEVICE)
-
-            # Получаем предсказания модели для текущего батча:
-            predictions = model(images)
-
-            # Вычисляем loss:
-            loss = criterion(predictions, labels)
-            total_loss += loss
-
-            # Выполняем backpropagation:
-            opt.zero_grad()
-            loss.backward()
-            opt.step()
-
-            # if idx % 1 == 0:
-            #     print(f"\n{idx}.goal:\t\t{torch.argmax(labels[0])}")
-            #     print(f"{idx}.prediction:\t\t{torch.argmax(predictions[0])}")
-            #     print(f"{idx}.{torch.softmax(predictions[0], dim=0)}")
-
-        # После каждой эпохи тестируем модель:
-        accuracy = model_test(model)
-
-        # Обновляем tensorboard или выводим в консоль данные о процессе обучения:
-        if config.USE_TENSORBOARD:
-            writer.add_scalar("Accuracy", accuracy, global_step=epoch)
-            writer.add_scalar("Loss", total_loss, global_step=epoch)
-        else:
-            print(f"Accuracy: {accuracy}\tLoss: {total_loss}\n")
-
-        # Сохраняем модель:
-        if config.SAVE_MODEL:
-            print("\033[32m=> Сохранение чекпоинта\033[0m")
-
-            # Создаем директорию для сохранения
-            dir_path = os.path.join(config.CHECKPOINT_DIR, get_current_time())
-            make_directory(dir_path)
-
-            # Сохраняем
-            model_path = os.path.join(dir_path, config.CHECKPOINT_NAME)
-            save_checkpoint(model, opt, model_path, epoch)
+    writer.close()
 
 
 if __name__ == "__main__":
-    train()
+    main()
