@@ -109,40 +109,6 @@ def remove_duplicates(paths: list, epsilon: int = 1) -> list:
 
     return unique_images
 
-# def remove_duplicates(images: list, epsilon: int = 1) -> list:
-#     """
-#     Описание
-#     ---------
-#     Удаляет одинаковые или похожие изображения из списка.
-#
-#     Параметры
-#     ---------
-#     **images:** list
-#         Список изображений
-#     **epsilon:** int
-#         Степень сходства между изображениями
-#
-#     Возвращаемое значение
-#     ---------
-#     list: Список уникальных изображений
-#     """
-#
-#     ImageFile.LOAD_TRUNCATED_IMAGES = True  # Позволяет обрабатывать поврежденные изображения
-#
-#     hashes = [imagehash.average_hash(img) for img in images]
-#
-#     img_hash = [list(tup) for tup in zip(images, hashes)]
-#     img_hash = sorted(img_hash, key=lambda item: str(item[1]))
-#
-#     unique_images = []
-#     for ih in img_hash:
-#         if len(unique_images) == 0 or ih[1] - unique_images[-1][1] > epsilon:
-#             unique_images.append(ih)
-#
-#     unique_images = [item[0] for item in unique_images]
-#
-#     return unique_images
-
 
 def resize_image(image: Image, size: int) -> Image:
     """
