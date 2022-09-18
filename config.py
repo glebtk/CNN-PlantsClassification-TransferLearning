@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 import torchvision.transforms as transforms
 
 # Предустановки
@@ -12,21 +11,19 @@ NUM_WORKERS = 2
 # Обучение
 NUM_EPOCHS = 100
 BATCH_SIZE = 32
-LEARNING_RATE = 3e-4
+LEARNING_RATE = 1e-3
 
 LOAD_MODEL = False
-SAVE_MODEL = False
-USE_TENSORBOARD = True
+SAVE_MODEL = True
 
 # Датасет
 DATASET_DIR = "./data/dataset"
-DATASET_MEAN = np.array([0.4056, 0.4354, 0.2909])
-DATASET_STD = np.array([0.2074, 0.1983, 0.2063])
+DATASET_MEAN = torch.Tensor([0.4056, 0.4354, 0.2909])
+DATASET_STD = torch.Tensor([0.2074, 0.1983, 0.2063])
 
 # Другое
 CHECKPOINT_DIR = "checkpoints"
 CHECKPOINT_NAME = "plants_model.pth.tar"
-
 
 train_transforms = transforms.Compose(
     [
