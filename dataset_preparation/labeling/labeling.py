@@ -8,7 +8,7 @@ from labeling_utils import make_directory
 
 def labeling(dataset_dir: str, remove_source: bool = False):
     # Переименовываем директорию датасета:
-    source_dir = "data/dataset_source"
+    source_dir = "./data/dataset_source"
     os.rename(dataset_dir, source_dir)
 
     # Создаём новые директории для сохранения результата:
@@ -82,11 +82,11 @@ def labeling(dataset_dir: str, remove_source: bool = False):
         shutil.rmtree(source_dir)
 
     # Сохраняем csv-файлы:
-    train_labels.to_csv("data/dataset/train_labels.csv", index=False)
-    test_labels.to_csv("data/dataset/test_labels.csv", index=False)
+    train_labels.to_csv("./data/dataset/train_labels.csv", index=False)
+    test_labels.to_csv("./data/dataset/test_labels.csv", index=False)
 
     print("\033[32m\033[1m\n\t...Готово!\033[0m")
 
 
 if __name__ == "__main__":
-    labeling("data/dataset/", remove_source=False)
+    labeling("./data/dataset/", remove_source=False)
