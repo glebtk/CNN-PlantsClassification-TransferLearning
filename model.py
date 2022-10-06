@@ -1,103 +1,57 @@
-import torch
 import config
+import torch
 import torch.nn as nn
+import torchvision
+from torch.nn.modules import Identity
+from torchvision import models
+from torchvision.models import ResNet18_Weights
+from torchvision.models import AlexNet_Weights
+from torchvision.models import MobileNet_V3_Small_Weights
 
-
-class ConvBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size=3, stride=1, padding=1, padding_mode="zeros"):
-        super().__init__()
-
-        self.conv = nn.Sequential(
-            nn.Conv2d(in_channels=in_channels,
-                      out_channels=out_channels,
-                      kernel_size=kernel_size,
-                      stride=stride,
-                      padding=padding,
-                      bias=True,
-                      padding_mode=padding_mode),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(inplace=True),
-            # nn.LeakyReLU(0.2, inplace=True),
-        )
-
-    def forward(self, x):
-        return self.conv(x)
-
-
-class DenseBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, activation=True):
-        super().__init__()
-
-        self.dense = nn.Sequential(
-            nn.Linear(in_channels, out_channels, bias=True),
-            nn.BatchNorm1d(out_channels),
-            nn.ReLU(inplace=True) if activation else nn.Identity(),
-            # nn.LeakyReLU(0.2, inplace=True),
-        )
-
-    def forward(self, x):
-        return self.dense(x)
+from torchsummary import summary
 
 
 class Model(nn.Module):
-    def __init__(self, in_channels=3, out_channels=50, conv_features=None, dense_features=None):
+    def __init__(self, model_name: str):
         super().__init__()
 
-        if conv_features is None:
-            conv_features = [64, 128, 256]
+        if model_name == "resnet18":
+            resnet18 = models.resnet18(weights=ResNet18_Weights.DEFAULT)
 
-        if dense_features is None:
-            dense_features = [256, 256, 128, 64]
+            for param in resnet18.parameters():
+                param.requires_grad = False
 
-        conv_layers = []
+            in_features = resnet18.fc.in_features
+            resnet18.fc = nn.Linear(in_features=in_features, out_features=config.OUT_FEATURES)
 
-        for feature in conv_features:
-            conv_layers.append(ConvBlock(in_channels, feature, stride=1))
-            conv_layers.append(ConvBlock(feature, feature, stride=1))
-            conv_layers.append(ConvBlock(feature, feature, stride=1))
-            conv_layers.append(ConvBlock(feature, feature, stride=1 if feature == conv_features[-1] else 2))
+            self.model = resnet18
 
-            in_channels = feature
+        if model_name == "alexnet":
+            alexnet = models.alexnet(weights=AlexNet_Weights.IMAGENET1K_V1)
+            alexnet.avgpool = Identity()
 
-        conv_layers.append(nn.Conv2d(in_channels=in_channels, out_channels=1, kernel_size=3, stride=1, padding=1))
+            for param in alexnet.parameters():
+                param.requires_grad = False
 
-        self.conv = nn.Sequential(*conv_layers)
+            alexnet.classifier[6] = nn.Linear(in_features=4096, out_features=config.OUT_FEATURES)
 
-        self.flatten = nn.Flatten()
+            self.model = alexnet
 
-        dense_layers = []
+        if model_name == "mobilenet_v3_small":
+            mobilenet = models.mobilenet_v3_small(weights=MobileNet_V3_Small_Weights.IMAGENET1K_V1)
 
-        in_channels = dense_features[0]
-        for feature in dense_features[1:]:
-            dense_layers.append(DenseBlock(in_channels, feature))
-            in_channels = feature
+            for param in mobilenet.parameters():
+                param.requires_grad = False
 
-        dense_layers.append(DenseBlock(in_channels, out_channels, activation=False))
+            mobilenet.classifier[3] = nn.Linear(in_features=1024, out_features=config.OUT_FEATURES)
 
-        self.dense = nn.Sequential(*dense_layers)
+            self.model = mobilenet
 
     def forward(self, x):
-        x = self.conv(x)
-        x = self.flatten(x)
-        x = self.dense(x)
-        # return torch.sigmoid(x)
-        return x
-
-
-def test():
-    model = Model()
-
-    # print(model)
-    # summary(model, depth=5)
-    images = torch.rand([2, config.IN_CHANNELS, config.IMAGE_SIZE, config.IMAGE_SIZE], dtype=torch.float32)
-
-    after_nn = model(images)
-
-    print(torch.softmax(after_nn[0], dim=0))
-    # print(after_nn[0].shape)
-    # print(after_nn[0])
-    print("ok")
+        return self.model(x)
 
 
 if __name__ == "__main__":
-    test()
+    model = Model(model_name="mobilenet_v3_small")
+    print(model)
+    summary(model, depth=5)

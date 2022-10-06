@@ -1,22 +1,17 @@
-/.idea/
-/__pycache__/
-
-/data/dataset/
-/checkpoints/
 /tb/
+/.idea/
+/venv/
+/checkpoints/
 
-/dataset_preparation/parsing/data/images/
+**/__pycache__/
+**/dataset/
+**/images/
+
 /dataset_preparation/parsing/geckodriver.log
-/dataset_preparation/parsing/__pycache__/
-
-/dataset_preparation/cleaning/data/images/
-/dataset_preparation/cleaning/data/dataset/
-/dataset_preparation/cleaning/__pycache__/
-
 /dataset_preparation/labeling/data/dataset_source/
-/dataset_preparation/labeling/data/dataset/
-/dataset_preparation/labeling/__pycache__/
 
-__test.py
+accuracy_test.py
 aug_test.py
 train_old.py
+model_old.py
+__test.py

@@ -3,6 +3,7 @@ tqdm==4.64.0
 numpy==1.23.2
 torch==1.12.1
 pandas==1.4.4
+optuna==3.0.2
 pillow==9.2.0
 requests==2.27.1
 imagehash==4.2.1

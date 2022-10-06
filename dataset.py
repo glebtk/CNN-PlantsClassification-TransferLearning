@@ -26,7 +26,7 @@ class CrimeanPlantsDataset(Dataset):
         if self.transform:
             img = self.transform(img)
 
-        label = one_hot(torch.tensor(self.data_csv.iloc[index, 1]), config.OUT_CHANNELS).type(torch.FloatTensor)
+        label = one_hot(torch.tensor(self.data_csv.iloc[index, 1]), config.OUT_FEATURES).type(torch.FloatTensor)
 
         return img, label
 

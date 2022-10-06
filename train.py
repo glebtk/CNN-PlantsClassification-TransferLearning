@@ -17,14 +17,20 @@ from utils import get_last_checkpoint
 from dataset import CrimeanPlantsDataset
 
 
-def train(model, opt, data_loader, num_epochs, writer, current_epoch=0, criterion=nn.CrossEntropyLoss()):
+def train(model, opt, data_loader, num_epochs, current_epoch=0, writer=None, criterion=None):
 
+    if writer is None:
+        writer = SummaryWriter(f"./tb/train/{get_current_time()}")
+
+    if criterion is None:
+        criterion = nn.CrossEntropyLoss()
+
+    best_accuracy = 0.0
     for epoch in range(current_epoch, num_epochs):
 
         model.train()  # Переключение модели в режим обучения
 
-        total_loss = 0.0
-
+        epoch_loss = 0.0
         for idx, (images, labels) in enumerate(tqdm(data_loader)):
             images = images.to(config.DEVICE)
             labels = labels.to(config.DEVICE)
@@ -34,7 +40,7 @@ def train(model, opt, data_loader, num_epochs, writer, current_epoch=0, criterio
 
             # Вычисляем loss:
             loss = criterion(predictions, labels)
-            total_loss += loss
+            epoch_loss += loss
 
             # Обновляем веса модели:
             opt.zero_grad()
@@ -43,28 +49,34 @@ def train(model, opt, data_loader, num_epochs, writer, current_epoch=0, criterio
 
         # После каждой эпохи тестируем модель:
         model.eval()  # Переключение модели в режим тестирования
-        accuracy = model_test(model)
+        current_accuracy = model_test(model)  # Тестирование
 
         # Обновляем tensorboard:
-        writer.add_scalar("Accuracy", accuracy, global_step=epoch)
-        writer.add_scalar("Loss", total_loss, global_step=epoch)
+        writer.add_scalar("Accuracy", current_accuracy, global_step=epoch)  # Текущая точность модели
+        writer.add_scalar("Loss", epoch_loss, global_step=epoch)  # Суммарный loss за текущую эпоху
 
-        # Сохраняем модель, если необходимо:
-        if config.SAVE_MODEL:
+        # Сохраняем чекпоинт, если необходимо:
+        if config.SAVE_BEST_MODEL and current_accuracy > best_accuracy:
             print("\033[32m=> Сохранение чекпоинта\033[0m")
 
+            # Обновляем лучшую точность:
+            best_accuracy = current_accuracy
+
             # Создаем директорию для сохранения
-            dir_path = os.path.join(config.CHECKPOINT_DIR, get_current_time())
+            dir_name = get_current_time()
+            dir_path = os.path.join(config.CHECKPOINT_DIR, dir_name)
             make_directory(dir_path)
 
             # Сохраняем
             model_path = os.path.join(dir_path, config.CHECKPOINT_NAME)
             save_checkpoint(model, opt, model_path, epoch)
 
+    writer.close()
+
 
 def main():
     # Инициализируем модель:
-    model = Model(in_channels=config.IN_CHANNELS, out_channels=config.OUT_CHANNELS).to(config.DEVICE)
+    model = Model(model_name="mobilenet_v3_small").to(config.DEVICE)
 
     # Инициализируем оптимизатор:
     opt = optim.Adam(
@@ -87,22 +99,19 @@ def main():
         pin_memory=True
     )
 
+    current_epoch = 0  # Текущая эпоха обучения
+
     # Загружаем последний чекпоинт модели:
     if config.LOAD_MODEL:
         print("\033[32m=> Загрузка последнего чекпоинта\033[0m")
+
         checkpoint_path = get_last_checkpoint()
         model, opt, current_epoch = load_checkpoint(model, opt, checkpoint_path)
-    else:
-        current_epoch = 0
 
     num_epochs = config.NUM_EPOCHS  # Количество эпох обучения
 
-    writer = SummaryWriter(f"./tb/train/{get_current_time()}")  # Writer для TensorBoard. Имя - текущие дата и время
-
     # Обучаем модель:
-    train(model, opt, data_loader, num_epochs, writer, current_epoch=current_epoch)
-
-    writer.close()
+    train(model, opt, data_loader, num_epochs, current_epoch=current_epoch)
 
 
 if __name__ == "__main__":
