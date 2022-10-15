@@ -8,8 +8,6 @@ from torchvision.models import ResNet18_Weights
 from torchvision.models import AlexNet_Weights
 from torchvision.models import MobileNet_V3_Small_Weights
 
-from torchsummary import summary
-
 
 class Model(nn.Module):
     def __init__(self, model_name: str):
@@ -28,7 +26,7 @@ class Model(nn.Module):
 
         if model_name == "alexnet":
             alexnet = models.alexnet(weights=AlexNet_Weights.IMAGENET1K_V1)
-            alexnet.avgpool = Identity()
+            # alexnet.avgpool = Identity()
 
             for param in alexnet.parameters():
                 param.requires_grad = False
@@ -49,9 +47,3 @@ class Model(nn.Module):
 
     def forward(self, x):
         return self.model(x)
-
-
-if __name__ == "__main__":
-    model = Model(model_name="mobilenet_v3_small")
-    print(model)
-    summary(model, depth=5)
