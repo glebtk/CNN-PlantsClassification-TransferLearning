@@ -99,10 +99,10 @@ def tryn(model_name, learning_rate, batch_size, num_epochs=None, writer=None):
 
 def objective(trial):
     model_name = trial.suggest_categorical("model_name", ["resnet18", "alexnet", "mobilenet_v3_small"])
-    lr = trial.suggest_float("learning_rate", 1e-4, 1e-2)
-    batch_size = trial.suggest_int("batch_size", 1, 128)
+    lr = trial.suggest_float("learning_rate", 3e-4, 3e-2)
+    batch_size = trial.suggest_int("batch_size", 16, 128)
 
-    accuracy = tryn(model_name=model_name, learning_rate=lr, batch_size=batch_size, num_epochs=1)
+    accuracy = tryn(model_name=model_name, learning_rate=lr, batch_size=batch_size, num_epochs=10)
 
     return accuracy
 
@@ -112,11 +112,11 @@ def main():
     study.optimize(objective, n_trials=100)
 
     trial = study.best_trial
-    print("Best Score: ", trial.value)
-    print("Best Params: ")
+    print("Лучшая точность: ", trial.value)
+    print("Лучшие гиперпараметры: ")
 
     for key, value in trial.params.items():
-        print("  {}: {}".format(key, value))
+        print(f"  {key}: {value}")
 
 
 if __name__ == "__main__":
