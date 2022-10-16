@@ -76,7 +76,7 @@ def train(model, opt, data_loader, num_epochs, current_epoch=0, writer=None, cri
 
 def main():
     # Инициализируем модель:
-    model = Model(model_name="mobilenet_v3_small").to(config.DEVICE)
+    model = Model(model_name=config.MODEL).to(config.DEVICE)
 
     # Инициализируем оптимизатор:
     opt = optim.Adam(
