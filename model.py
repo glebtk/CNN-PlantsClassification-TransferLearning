@@ -16,9 +16,11 @@ class Model(nn.Module):
         if model_name == "resnet18":
             resnet18 = models.resnet18(weights=ResNet18_Weights.DEFAULT)
 
+            # "Замораживаем" все слои нейросети:
             for param in resnet18.parameters():
                 param.requires_grad = False
 
+            # Заменяем последний слой:
             in_features = resnet18.fc.in_features
             resnet18.fc = nn.Linear(in_features=in_features, out_features=config.OUT_FEATURES)
 
@@ -26,22 +28,27 @@ class Model(nn.Module):
 
         if model_name == "alexnet":
             alexnet = models.alexnet(weights=AlexNet_Weights.IMAGENET1K_V1)
-            # alexnet.avgpool = Identity()
 
-            for param in alexnet.parameters():
+            # "Замораживаем" градиенты в feature extractor сети:
+            for param in alexnet.features.parameters():
                 param.requires_grad = False
 
-            alexnet.classifier[6] = nn.Linear(in_features=4096, out_features=config.OUT_FEATURES)
+            # Заменяем последний слой:
+            in_features = alexnet.classifier[-1].in_features
+            alexnet.classifier[-1] = nn.Linear(in_features=in_features, out_features=config.OUT_FEATURES)
 
             self.model = alexnet
 
         if model_name == "mobilenet_v3_small":
             mobilenet = models.mobilenet_v3_small(weights=MobileNet_V3_Small_Weights.IMAGENET1K_V1)
 
-            for param in mobilenet.parameters():
+            # "Замораживаем" градиенты в feature extractor сети:
+            for param in mobilenet.features.parameters():
                 param.requires_grad = False
 
-            mobilenet.classifier[3] = nn.Linear(in_features=1024, out_features=config.OUT_FEATURES)
+            # Заменяем последний слой:
+            in_features = mobilenet.classifier[-1].in_features
+            mobilenet.classifier[-1] = nn.Linear(in_features=in_features, out_features=config.OUT_FEATURES)
 
             self.model = mobilenet
 
