@@ -1,4 +1,7 @@
 import os
+
+import torch
+
 import config
 import torch.nn as nn
 import torch.optim as optim
@@ -23,7 +26,11 @@ def train(model, opt, data_loader, num_epochs, current_epoch=0, writer=None, cri
         writer = SummaryWriter(f"./tb/train/{get_current_time()}")
 
     if criterion is None:
-        criterion = nn.CrossEntropyLoss()
+        dataset_len = len(data_loader.dataset)  # Длина датасета
+        class_value_counts = data_loader.dataset.data_csv["label"].value_counts(sort=False)  # Кол-во изображений каждого класса
+        class_weights = torch.Tensor([1-x/dataset_len for x in class_value_counts])  # Веса классов
+
+        criterion = nn.CrossEntropyLoss(weight=class_weights)
 
     best_accuracy = 0.0
     for epoch in range(current_epoch, num_epochs):
