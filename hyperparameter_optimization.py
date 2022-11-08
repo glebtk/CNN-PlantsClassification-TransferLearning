@@ -50,8 +50,8 @@ def tryn(model_name, learning_rate, batch_size, num_epochs=None, criterion=None,
     )
 
     if criterion is None:
-        dataset_len = len(data_loader.dataset)  # Длина датасета
-        class_value_counts = data_loader.dataset.data_csv["label"].value_counts(sort=False)  # Кол-во изображений каждого класса
+        dataset_len = len(dataset)  # Длина датасета
+        class_value_counts = dataset.data_csv["label"].value_counts(sort=False)  # Кол-во изображений каждого класса
         class_weights = torch.Tensor([1 - (x / dataset_len) for x in class_value_counts]).to(config.DEVICE)  # Веса классов
 
         criterion = nn.CrossEntropyLoss(weight=class_weights)
