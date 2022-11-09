@@ -1,5 +1,8 @@
 import os
+import random
 import sys
+
+import numpy as np
 import torch
 import shutil
 import config
@@ -9,7 +12,7 @@ from torch.utils.data import DataLoader
 from dataset import CrimeanPlantsDataset
 
 
-def make_directory(dir_path: str):
+def make_directory(dir_path: str) -> None:
     """Создаёт директорию. Если директория существует - перезаписывает."""
 
     try:
@@ -19,7 +22,7 @@ def make_directory(dir_path: str):
         os.makedirs(dir_path)
 
 
-def save_checkpoint(model, optimizer, model_path, epoch=0):
+def save_checkpoint(model, optimizer, model_path, epoch=0) -> None:
     """Сохраняет чекпоинт модели в процессе обучения (модель, оптимизатор, номер эпохи)."""
 
     checkpoint = {
@@ -50,7 +53,7 @@ def load_checkpoint(model, optimizer, checkpoint_file):
         sys.exit(1)
 
 
-def get_last_checkpoint():
+def get_last_checkpoint() -> str:
     """Возвращает путь к последнему по времени сохранённому чекпоинту."""
     try:
         checkpoints = os.listdir(config.CHECKPOINT_DIR)
@@ -69,7 +72,7 @@ def get_last_checkpoint():
         sys.exit(1)
 
 
-def get_current_time():
+def get_current_time() -> str:
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 
@@ -111,3 +114,15 @@ def model_test(model) -> float:
     accuracy = correct / len(dataset)  # Точность = количество правильных ответов / общее количество изображений
 
     return accuracy
+
+
+def set_seed(seed: int = 42) -> None:
+    np.random.seed(seed)
+    random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    os.environ["PYTHONHASHSEED"] = str(seed)
+    
+    print(f"Random seed set as {seed}")
