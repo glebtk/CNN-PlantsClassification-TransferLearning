@@ -19,8 +19,8 @@ def download_and_unzip(url, path, name):
 
 def download_files():
     if LOAD_DATASET:
-        url = "https://gitlab.com/glebtutik/european_to_asian_files/-/raw/main/dataset/dataset.zip"
-        path = "dataset"
+        url = "https://gitlab.com/glebtutik/crimean_plants_classification_files/-/raw/main/data/dataset.zip"
+        path = "data"
         file_name = "dataset.zip"
 
         download_and_unzip(url, path, file_name)
