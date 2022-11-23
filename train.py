@@ -28,7 +28,7 @@ def train(model, opt, data_loader, num_epochs, current_epoch=0, writer=None, cri
     if criterion is None:
         dataset_len = len(data_loader.dataset)  # Длина датасета
         class_value_counts = data_loader.dataset.data_csv["label"].value_counts(sort=False)  # Кол-во изображений каждого класса
-        class_weights = torch.Tensor([1-x/dataset_len for x in class_value_counts])  # Веса классов
+        class_weights = torch.Tensor([1 - (x / dataset_len) for x in class_value_counts]).to(config.DEVICE)  # Веса классов
 
         criterion = nn.CrossEntropyLoss(weight=class_weights)
 
@@ -43,7 +43,7 @@ def train(model, opt, data_loader, num_epochs, current_epoch=0, writer=None, cri
             labels = labels.to(config.DEVICE)
 
             # Получаем предсказания модели для текущего батча:
-            predictions = model(images)
+            predictions = model(images).to(config.DEVICE)
 
             # Вычисляем loss:
             loss = criterion(predictions, labels)
