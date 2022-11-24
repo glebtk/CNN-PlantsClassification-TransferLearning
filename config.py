@@ -42,8 +42,8 @@ train_transforms = transforms.Compose(
         transforms.RandomResizedCrop(size=IMAGE_SIZE,
                                      scale=(0.2, 1.0),
                                      interpolation=transforms.InterpolationMode.NEAREST),
-        transforms.RandomErasing(p=0.3, scale=(0.01, 0.2))
-        # transforms.Normalize(mean=MEAN, std=STD),
+        transforms.RandomErasing(p=0.3, scale=(0.01, 0.2)),
+        transforms.Normalize(mean=MEAN, std=STD),
      ]
 )
 
