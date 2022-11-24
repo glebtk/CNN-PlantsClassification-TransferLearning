@@ -106,7 +106,8 @@ def tryn(model_name, learning_rate, batch_size, num_epochs=None, criterion=None,
 
 
 def objective(trial):
-    model_name = trial.suggest_categorical("model_name", ["resnet18", "alexnet", "mobilenet_v3_small"])
+    # model_name = trial.suggest_categorical("model_name", ["resnet18", "alexnet", "mobilenet_v3_small"])
+    model_name = trial.suggest_categorical("model_name", ["mobilenet_v3_small"])
     lr = trial.suggest_float("learning_rate", 3e-5, 1e-2)
     batch_size = trial.suggest_int("batch_size", 8, 128)
 
