@@ -35,10 +35,10 @@ CHECKPOINT_NAME = "plants_model.pth.tar"
 train_transforms = transforms.Compose(
     [
         transforms.RandomHorizontalFlip(p=0.5),
-        transforms.ColorJitter(brightness=0.6, contrast=0.6, saturation=0.5),
+        transforms.ColorJitter(brightness=0.9, contrast=0.9, saturation=0.9),
         transforms.RandomAdjustSharpness(sharpness_factor=1.85, p=0.15),
         transforms.RandomRotation(degrees=(-45, 45)),
-        transforms.RandomResizedCrop(size=IMAGE_SIZE, scale=(0.25, 1.0)),
+        transforms.RandomResizedCrop(size=IMAGE_SIZE, scale=(0.15, 2.0)),
         transforms.Normalize(mean=MEAN, std=STD),
      ]
 )
