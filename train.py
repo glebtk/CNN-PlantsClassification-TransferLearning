@@ -20,7 +20,7 @@ from utils import get_last_checkpoint
 from dataset import CrimeanPlantsDataset
 
 
-def train(model, opt, data_loader, num_epochs, current_epoch=0, writer=None, criterion=None):
+def train(model, opt, data_loader, num_epochs, current_epoch=1, writer=None, criterion=None):
 
     if writer is None:
         writer = SummaryWriter(f"./tb/train/{get_current_time()}")
@@ -37,7 +37,7 @@ def train(model, opt, data_loader, num_epochs, current_epoch=0, writer=None, cri
     writer.add_scalar("Accuracy", best_accuracy, global_step=current_epoch)
 
     # Цикл обучения:
-    for epoch in range(current_epoch, num_epochs):
+    for epoch in range(current_epoch + 1, num_epochs + 1):
 
         model.train()  # Переключение модели в режим обучения
 
