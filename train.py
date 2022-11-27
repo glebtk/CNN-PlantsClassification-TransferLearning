@@ -99,7 +99,8 @@ def main():
     dataset = CrimeanPlantsDataset(
         root_dir=config.DATASET_DIR,
         csv_file=os.path.join(config.DATASET_DIR, "train_labels.csv"),
-        transform=config.train_transforms
+        transform=config.train_transforms,
+        oversampling=True
     )
 
     data_loader = DataLoader(
