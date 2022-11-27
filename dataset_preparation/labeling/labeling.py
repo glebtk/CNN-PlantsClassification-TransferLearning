@@ -6,19 +6,18 @@ import pandas as pd
 from labeling_utils import make_directory
 
 
-def labeling(dataset_dir: str, remove_source: bool = False):
+def labeling(dataset_dir: str, test_number: int = 30, remove_source: bool = False):
     # Переименовываем директорию датасета:
     source_dir = "./data/dataset_source"
     os.rename(dataset_dir, source_dir)
 
     # Создаём новые директории для сохранения результата:
-    make_directory(dataset_dir)
-
     train_dir = os.path.join(dataset_dir, "train")
     test_dir = os.path.join(dataset_dir, "test")
 
-    make_directory(train_dir)
-    make_directory(test_dir)
+    make_directory(dataset_dir)  # Общая директория датасета
+    make_directory(train_dir)  # Тренировочные изображения
+    make_directory(test_dir)  # Тестовые изображения
 
     train_labels = pd.DataFrame(columns=["path", "label"])
     test_labels = pd.DataFrame(columns=["path", "label"])
@@ -43,11 +42,10 @@ def labeling(dataset_dir: str, remove_source: bool = False):
         image_names = os.listdir(current_dir_path)  # Имена изображений в текущей директории
         random.shuffle(image_names)  # Перемешиваем имена изображений
 
-        train_len = int(len(image_names) * 0.85)  # Вычисляем длину обучающей выборки. Она будет составлять 85%
-
         # Разделяем на test и train:
-        train_image_names = image_names[:train_len]
-        test_image_names = image_names[train_len:]
+        train_number = len(image_names) - test_number
+        train_image_names = image_names[:train_number]
+        test_image_names = image_names[train_number:]
 
         # Проходимся циклом по обучающей выборке:
         for number, name in enumerate(train_image_names):
@@ -61,7 +59,7 @@ def labeling(dataset_dir: str, remove_source: bool = False):
             train_labels = pd.concat([train_labels, record])
 
             # Перемещаем и переименовываем изображение:
-            shutil.move(old_path, new_path)
+            shutil.copyfile(old_path, new_path)
 
         # Проходимся циклом по тестовой выборке:
         for number, name in enumerate(test_image_names):
@@ -75,7 +73,7 @@ def labeling(dataset_dir: str, remove_source: bool = False):
             test_labels = pd.concat([test_labels, record])
 
             # Перемещаем и переименовываем изображение:
-            shutil.move(old_path, new_path)
+            shutil.copyfile(old_path, new_path)
 
     # Если требуется, удаляем изначальную директорию:
     if remove_source:
