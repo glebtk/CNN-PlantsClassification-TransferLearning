@@ -38,7 +38,8 @@ def tryn(model_name, learning_rate, batch_size, num_epochs=None, criterion=None,
     dataset = CrimeanPlantsDataset(
         root_dir=config.DATASET_DIR,
         csv_file=os.path.join(config.DATASET_DIR, "train_labels.csv"),
-        transform=config.train_transforms
+        transform=config.train_transforms,
+        oversampling=True
     )
 
     data_loader = DataLoader(
@@ -52,12 +53,13 @@ def tryn(model_name, learning_rate, batch_size, num_epochs=None, criterion=None,
     if criterion is None:
         dataset_len = len(dataset)  # Длина датасета
         class_value_counts = dataset.data_csv["label"].value_counts(sort=False)  # Кол-во изображений каждого класса
-        class_weights = torch.Tensor([1 - (x / dataset_len) for x in class_value_counts]).to(config.DEVICE)  # Веса классов
+        class_weights = torch.Tensor([dataset_len / (x * config.OUT_FEATURES) for x in class_value_counts]).to(config.DEVICE)  # Веса классов
 
         criterion = nn.CrossEntropyLoss(weight=class_weights)
 
-    best_accuracy = 0.0
-    for epoch in range(num_epochs):
+    best_accuracy = model_test(model)
+    writer.add_scalar("Accuracy", best_accuracy, global_step=0)
+    for epoch in range(1, num_epochs + 1):
 
         model.train()  # Переключение модели в режим обучения
 
