@@ -80,6 +80,7 @@ def model_test(model) -> float:
     """Проводит тестирование модели на тестовой выборке. Возвращает точность (accuracy)."""
 
     model = model.to(config.DEVICE)
+    model.eval()
 
     # Загружаем датасет
     dataset = CrimeanPlantsDataset(
