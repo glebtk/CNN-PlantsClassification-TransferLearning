@@ -32,9 +32,8 @@ def train(model, opt, data_loader, num_epochs, current_epoch=1, writer=None, cri
 
         criterion = nn.CrossEntropyLoss(weight=class_weights)
 
-    # Находим текущую точность сети и обновляем tensorboard:
+    # Находим лучшую (текущую) точность сети:
     best_accuracy = model_test(model)
-    writer.add_scalar("Accuracy", best_accuracy, global_step=current_epoch)
 
     # Цикл обучения:
     for epoch in range(current_epoch + 1, num_epochs + 1):
