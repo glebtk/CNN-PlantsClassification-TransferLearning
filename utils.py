@@ -109,7 +109,7 @@ def model_test(model) -> float:
 
             for prediction, label in zip(predictions, labels):
                 # Если предсказание правильное,
-                if torch.argmax(torch.softmax(prediction, dim=0)) == torch.argmax(label):
+                if torch.argmax(torch.softmax(prediction, dim=0)) == label:
                     correct += 1  # засчитываем правильный ответ
 
     accuracy = correct / len(dataset)  # Точность = количество правильных ответов / общее количество изображений
