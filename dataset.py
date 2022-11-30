@@ -5,7 +5,6 @@ import pandas as pd
 
 from torch.utils.data import Dataset
 from torchvision.io import read_image
-from torch.nn.functional import one_hot
 
 
 class CrimeanPlantsDataset(Dataset):
@@ -50,7 +49,7 @@ class CrimeanPlantsDataset(Dataset):
         if self.transform:
             img = self.transform(img)
 
-        label = one_hot(torch.tensor(self.data_csv.iloc[index, 1]), config.OUT_FEATURES).type(torch.FloatTensor)
+        label = torch.tensor(self.data_csv.iloc[index, 1])
 
         return img, label
 
