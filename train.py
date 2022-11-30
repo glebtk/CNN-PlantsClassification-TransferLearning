@@ -88,9 +88,15 @@ def main():
     # Инициализируем модель:
     model = Model(model_name=config.MODEL).to(config.DEVICE)
 
+    # Определяем параметры, которые будем обновлять при обучении:
+    params_to_update = []
+    for param in model.parameters():
+        if param.requires_grad:
+            params_to_update.append(param)
+
     # Инициализируем оптимизатор:
     opt = optim.Adam(
-        params=list(model.parameters()),
+        params=params_to_update,
         lr=config.LEARNING_RATE
     )
 
