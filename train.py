@@ -17,7 +17,7 @@ from utils import get_last_checkpoint
 from dataset import CrimeanPlantsDataset
 
 
-def train(model, opt, data_loader, num_epochs, current_epoch=1, writer=None, criterion=None):
+def train(model, opt, data_loader, num_epochs, current_epoch=0, writer=None, criterion=None):
 
     if writer is None:
         writer = SummaryWriter(f"./tb/train/{get_current_time()}")
