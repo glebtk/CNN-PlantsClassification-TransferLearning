@@ -1,38 +1,31 @@
 import os
-
-import torch
-
 import config
 import optuna
-import torch.nn as nn
 import torch.optim as optim
 
-from tqdm import tqdm
+from train import train
+from model import Model
 from torch.utils.data import DataLoader
+from dataset import CrimeanPlantsDataset
 from torch.utils.tensorboard import SummaryWriter
 
-from model import Model
-from utils import model_test
-from utils import make_directory
-from utils import save_checkpoint
-from dataset import CrimeanPlantsDataset
 
+def objective(trial):
+    models = ["alexnet", "convnext_tiny", "densenet121", "densenet201", "resnet18", "mobilenet_v3_small", "mobilenet_v3_large"]
 
-def tryn(model_name, learning_rate, batch_size, num_epochs=None, criterion=None, writer=None):
+    model_name = trial.suggest_categorical("model_name", models)
+    learning_rate = trial.suggest_float("learning_rate", 3e-5, 1e-2),
+    batch_size = trial.suggest_int("batch_size", 16, 128)
 
-    if num_epochs is None:
-        num_epochs = config.NUM_EPOCHS
-
-    if writer is None:
-        writer = SummaryWriter(f"./tb/optim/mn={model_name}_lr={round(learning_rate, 5)}_bs={batch_size}")
+    writer = SummaryWriter(f"./tb/optim/mn={model_name}_lr={round(learning_rate[0], 5)}_bs={batch_size}")
 
     model = Model(model_name=model_name).to(config.DEVICE)
 
+    # Определяем параметры, которые будем обновлять при обучении:
+    params_to_update = [param for param in model.parameters() if param.requires_grad]
+
     # Инициализируем оптимизатор:
-    opt = optim.Adam(
-        params=list(model.parameters()),
-        lr=learning_rate
-    )
+    opt = optim.Adam(params=params_to_update, lr=learning_rate[0])
 
     # Загружаем датасет:
     dataset = CrimeanPlantsDataset(
@@ -50,70 +43,7 @@ def tryn(model_name, learning_rate, batch_size, num_epochs=None, criterion=None,
         pin_memory=True
     )
 
-    if criterion is None:
-        dataset_len = len(dataset)  # Длина датасета
-        class_value_counts = dataset.data_csv["label"].value_counts(sort=False)  # Кол-во изображений каждого класса
-        class_weights = torch.Tensor([dataset_len / (x * config.OUT_FEATURES) for x in class_value_counts]).to(config.DEVICE)  # Веса классов
-
-        criterion = nn.CrossEntropyLoss(weight=class_weights)
-
-    best_accuracy = model_test(model)
-    writer.add_scalar("Accuracy", best_accuracy, global_step=0)
-    for epoch in range(1, num_epochs + 1):
-
-        model.train()  # Переключение модели в режим обучения
-
-        epoch_loss = 0.0
-        for idx, (images, labels) in enumerate(tqdm(data_loader)):
-            images = images.to(config.DEVICE)
-            labels = labels.to(config.DEVICE)
-
-            # Получаем предсказания модели для текущего батча:
-            predictions = model(images)
-
-            # Вычисляем loss:
-            loss = criterion(predictions, labels)
-            epoch_loss += loss
-
-            # Обновляем веса модели:
-            opt.zero_grad()
-            loss.backward()
-            opt.step()
-
-        # После каждой эпохи тестируем модель:
-        model.eval()  # Переключение модели в режим тестирования
-        current_accuracy = model_test(model)  # Тестирование
-
-        # Обновляем tensorboard:
-        writer.add_scalar("Accuracy", current_accuracy, global_step=epoch)
-        writer.add_scalar("Loss", epoch_loss, global_step=epoch)
-
-        # Сохраняем чекпоинт, если необходимо:
-        if config.SAVE_BEST_MODEL and current_accuracy > best_accuracy:
-            # Обновляем точность:
-            best_accuracy = current_accuracy
-
-            # Создаем директорию для сохранения чекпоинта:
-            dir_name = f"mn_{model_name}_lr_{round(learning_rate, 5)}_bs_{batch_size}_e_{epoch}"
-            dir_path = os.path.join(config.CHECKPOINT_DIR, dir_name)
-            make_directory(dir_path)
-
-            # Сохраняем:
-            model_path = os.path.join(dir_path, config.CHECKPOINT_NAME)
-            save_checkpoint(model, opt, model_path, epoch)
-
-    writer.close()
-
-    return best_accuracy
-
-
-def objective(trial):
-    # model_name = trial.suggest_categorical("model_name", ["resnet18", "alexnet", "mobilenet_v3_small"])
-    model_name = trial.suggest_categorical("model_name", ["mobilenet_v3_small"])
-    lr = trial.suggest_float("learning_rate", 3e-5, 1e-2)
-    batch_size = trial.suggest_int("batch_size", 8, 128)
-
-    accuracy = tryn(model_name=model_name, learning_rate=lr, batch_size=batch_size, num_epochs=10)
+    accuracy = train(model, opt, data_loader, num_epochs=5, writer=writer)
 
     return accuracy
 

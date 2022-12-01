@@ -1,7 +1,5 @@
 import os
-
 import torch
-
 import config
 import torch.nn as nn
 import torch.optim as optim
@@ -9,7 +7,6 @@ import torch.optim as optim
 from tqdm import tqdm
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-
 from model import Model
 from utils import model_test
 from utils import make_directory
@@ -26,10 +23,13 @@ def train(model, opt, data_loader, num_epochs, current_epoch=1, writer=None, cri
         writer = SummaryWriter(f"./tb/train/{get_current_time()}")
 
     if criterion is None:
-        dataset_len = len(data_loader.dataset)  # Длина датасета
-        class_value_counts = data_loader.dataset.data_csv["label"].value_counts(sort=False)  # Кол-во изображений каждого класса
-        class_weights = torch.Tensor([dataset_len / (x * config.OUT_FEATURES) for x in class_value_counts]).to(config.DEVICE)  # Веса классов
+        # Находим веса классов:
+        dataset_len = len(data_loader.dataset)
+        class_value_counts = data_loader.dataset.data_csv["label"].value_counts(sort=False)
+        class_weights = torch.Tensor([dataset_len / (x * config.OUT_FEATURES) for x in class_value_counts])
+        class_weights.to(config.DEVICE)
 
+        # Определяем Loss-функцию и передаем в нее веса классов:
         criterion = nn.CrossEntropyLoss(weight=class_weights)
 
     # Находим лучшую (текущую) точность сети:
@@ -65,23 +65,26 @@ def train(model, opt, data_loader, num_epochs, current_epoch=1, writer=None, cri
         writer.add_scalar("Accuracy", current_accuracy, global_step=epoch)  # Текущая точность модели
         writer.add_scalar("Loss", epoch_loss, global_step=epoch)  # Суммарный loss за текущую эпоху
 
-        # Сохраняем чекпоинт, если необходимо:
-        if config.SAVE_BEST_MODEL and current_accuracy > best_accuracy:
-            print("\033[32m=> Сохранение чекпоинта\033[0m")
-
-            # Обновляем лучшую точность:
+        # Обновляем лучшую точность:
+        if current_accuracy > best_accuracy:
             best_accuracy = current_accuracy
 
-            # Создаем директорию для сохранения
-            dir_name = get_current_time()
-            dir_path = os.path.join(config.CHECKPOINT_DIR, dir_name)
-            make_directory(dir_path)
+            # Сохраняем чекпоинт с лучшей точностью, если необходимо:
+            if config.SAVE_BEST_MODEL:
+                print("\033[32m=> Сохранение чекпоинта\033[0m")
 
-            # Сохраняем
-            model_path = os.path.join(dir_path, config.CHECKPOINT_NAME)
-            save_checkpoint(model, opt, model_path, epoch)
+                # Создаем директорию для сохранения
+                dir_name = get_current_time()
+                dir_path = os.path.join(config.CHECKPOINT_DIR, dir_name)
+                make_directory(dir_path)
+
+                # Сохраняем
+                model_path = os.path.join(dir_path, config.CHECKPOINT_NAME)
+                save_checkpoint(model, opt, model_path, epoch)
 
     writer.close()
+
+    return best_accuracy
 
 
 def main():
@@ -89,16 +92,10 @@ def main():
     model = Model(model_name=config.MODEL).to(config.DEVICE)
 
     # Определяем параметры, которые будем обновлять при обучении:
-    params_to_update = []
-    for param in model.parameters():
-        if param.requires_grad:
-            params_to_update.append(param)
+    params_to_update = [param for param in model.parameters() if param.requires_grad]
 
     # Инициализируем оптимизатор:
-    opt = optim.Adam(
-        params=params_to_update,
-        lr=config.LEARNING_RATE
-    )
+    opt = optim.Adam(params=params_to_update, lr=config.LEARNING_RATE)
 
     # Загружаем датасет:
     dataset = CrimeanPlantsDataset(
