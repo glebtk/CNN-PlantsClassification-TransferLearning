@@ -27,7 +27,7 @@ def train(model, opt, data_loader, num_epochs, current_epoch=1, writer=None, cri
         dataset_len = len(data_loader.dataset)
         class_value_counts = data_loader.dataset.data_csv["label"].value_counts(sort=False)
         class_weights = torch.Tensor([dataset_len / (x * config.OUT_FEATURES) for x in class_value_counts])
-        class_weights.to(config.DEVICE)
+        class_weights = class_weights.to(config.DEVICE)
 
         # Определяем Loss-функцию и передаем в нее веса классов:
         criterion = nn.CrossEntropyLoss(weight=class_weights)
