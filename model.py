@@ -52,10 +52,10 @@ class Model(nn.Module):
             densenet121.classifier = nn.Sequential(
                 nn.Linear(in_features=in_features, out_features=int(in_features / 2)),
                 nn.ReLU(),
-                nn.Dropout(0.2, inplace=True),
+                nn.Dropout(0.2),
                 nn.Linear(in_features=int(in_features / 2), out_features=int(in_features / 4)),
                 nn.Hardswish(),
-                nn.Dropout(0.2, inplace=True),
+                nn.Dropout(0.2),
                 nn.Linear(in_features=int(in_features / 4), out_features=config.OUT_FEATURES)
             )
 
@@ -73,10 +73,10 @@ class Model(nn.Module):
             densenet201.classifier = nn.Sequential(
                 nn.Linear(in_features=in_features, out_features=int(in_features / 2)),
                 nn.ReLU(),
-                nn.Dropout(0.2, inplace=True),
+                nn.Dropout(0.2),
                 nn.Linear(in_features=int(in_features / 2), out_features=int(in_features / 4)),
                 nn.Hardswish(),
-                nn.Dropout(0.2, inplace=True),
+                nn.Dropout(0.2),
                 nn.Linear(in_features=int(in_features / 4), out_features=config.OUT_FEATURES)
             )
 
