@@ -1,51 +1,51 @@
-Russian,Latin
-"Бубенчик лилиелистный","Adenophora liliifolia"
-"Адиантум венерин волос","Adiantum capillus-veneris"
-"Адонис весенний","Adonis vernalis"
-"Лук натальи","Allium nathaliae"
-"Лук диоскорида","Allium siculum"
-"Мухомор красный","Amanita muscaria"
-"Амарант","Amaranthus"
-"Проломник крымский","Androsace villosa"
-"Пупавка бесплодная","Anthemis sterilis"
-"Венечник лилейный","Anthericum liliago"
-"Полынь крымская","Artemisia taurica"
-"Асфоделина желтая","Asphodeline lutea"
-"Лисичка обыкновенная","Cantharellus cibarius"
-"Каперс травянистый","Capparis herbacea"
-"Пыльцеголовник крупноцветковый","Cephalanthera damasonium"
-"Цикорий обыкновенный","Cichorium intybus"
-"Ландыш майский","Convallaria majalis"
-"Боярышник карадагский","Crataegus karadaghensis"
-"Шафран адама","Crocus biflorus"
-"Цикламен коский","Cyclamen coum"
-"Венерин башмачок","Cypripedium calceolus"
-"Пальчатокоренник иберийский","Dactylorhiza iberica"
-"Дурман обыкновенный","Datura stramonium"
-"Хвощ речной","Equisetum fluviatile"
-"Эремурус представительный","Eremurus spectabilis"
-"Синеголовник морской","Eryngium maritimum"
-"Подснежник складчатый","Galanthus plicatus"
-"Гудайера ползучая","Goodyera repens"
-"Борщевик лигустиколистный","Heracleum ligusticifolium"
-"Ирис низкий","Iris pumila"
-"Офрис пчелоносная","Ophrys apifera"
-"Опунция индийская","Opuntia ficus-indica"
-"Пион тонколистный","Paeonia tenuifolia"
-"Листовик обыкновенный","Phyllitis scolopendrium"
-"Любка двулистная","Platanthera bifolia"
-"Ламира ежеголовая","Ptilostemon echinocephalus"
-"Василёк талиева","Rhaponticoides taliewii"
-"Шиповник","Rosa"
-"Иглица колючая","Ruscus aculeatus"
-"Иглица подъязычная","Ruscus hypoglossum"
-"Пролеска двулистная","Scilla bifolia"
-"Крестовник крымский","Senecio tauricus"
-"Железница крымская","Sideritis taurica"
-"Одуванчик","Taraxacum"
-"Тис ягодный","Taxus baccat"
-"Чабрец обыкновенный","Thymus vulgaris"
-"Липа пушистостолбиковая","Tilia dasystyla"
-"Клевер луговой","Trifolium pratense"
-"Тюльпан двуцветковый","Tulipa biflora"
-"Рогоз","Typha"
+Russian,Latin,Class
+"Бубенчик лилиелистный","Adenophora liliifolia",0
+"Адиантум венерин волос","Adiantum capillus-veneris",1
+"Адонис весенний","Adonis vernalis",2
+"Лук натальи","Allium nathaliae",3
+"Лук диоскорида","Allium siculum",4
+"Мухомор красный","Amanita muscaria",5
+"Амарант","Amaranthus",6
+"Проломник крымский","Androsace villosa",7
+"Пупавка бесплодная","Anthemis sterilis",8
+"Венечник лилейный","Anthericum liliago",9
+"Полынь крымская","Artemisia taurica",10
+"Асфоделина желтая","Asphodeline lutea",11
+"Лисичка обыкновенная","Cantharellus cibarius",12
+"Каперс травянистый","Capparis herbacea",13
+"Пыльцеголовник крупноцветковый","Cephalanthera damasonium",14
+"Цикорий обыкновенный","Cichorium intybus",15
+"Ландыш майский","Convallaria majalis",16
+"Боярышник карадагский","Crataegus karadaghensis",17
+"Шафран адама","Crocus biflorus",18
+"Цикламен коский","Cyclamen coum",19
+"Венерин башмачок","Cypripedium calceolus",20
+"Пальчатокоренник иберийский","Dactylorhiza iberica",21
+"Дурман обыкновенный","Datura stramonium",22
+"Хвощ речной","Equisetum fluviatile",23
+"Эремурус представительный","Eremurus spectabilis",24
+"Синеголовник морской","Eryngium maritimum",25
+"Подснежник складчатый","Galanthus plicatus",26
+"Гудайера ползучая","Goodyera repens",27
+"Борщевик лигустиколистный","Heracleum ligusticifolium",28
+"Ирис низкий","Iris pumila",29
+"Офрис пчелоносная","Ophrys apifera",30
+"Опунция индийская","Opuntia ficus-indica",31
+"Пион тонколистный","Paeonia tenuifolia",32
+"Листовик обыкновенный","Phyllitis scolopendrium",33
+"Любка двулистная","Platanthera bifolia",34
+"Ламира ежеголовая","Ptilostemon echinocephalus",35
+"Василёк талиева","Rhaponticoides taliewii",36
+"Шиповник","Rosa",37
+"Иглица колючая","Ruscus aculeatus",38
+"Иглица подъязычная","Ruscus hypoglossum",39
+"Пролеска двулистная","Scilla bifolia",40
+"Крестовник крымский","Senecio tauricus",41
+"Железница крымская","Sideritis taurica",42
+"Одуванчик","Taraxacum",43
+"Тис ягодный","Taxus baccat",44
+"Чабрец обыкновенный","Thymus vulgaris",45
+"Липа пушистостолбиковая","Tilia dasystyla",46
+"Клевер луговой","Trifolium pratense",47
+"Тюльпан двуцветковый","Tulipa biflora",48
+"Рогоз","Typha",49
