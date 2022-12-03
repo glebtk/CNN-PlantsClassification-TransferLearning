@@ -8,20 +8,27 @@ from torchvision.io import read_image
 
 
 class CrimeanPlantsDataset(Dataset):
-    def __init__(self, root_dir: str, csv_file: str, oversampling: bool = False, transform=None,):
+    def __init__(self, root_dir: str, csv_file: str, oversampling: bool = False, transform=None):
         self.root_dir = root_dir
 
         if oversampling:
             df_csv = pd.read_csv(csv_file)
+
+            # Находим количество изображений в наиболее полном классе:
             max_class_length = df_csv["label"].value_counts().max()
+
+            # Получаем все метки классов:
             class_labels = df_csv["label"].unique()
 
+            # Выравниваем количество изображений в классах путём случайного дублирования:
             data_csv = pd.DataFrame()
             for label in class_labels:
-                current_class = df_csv.loc[df_csv["label"] == label]
+                current_class = df_csv.loc[df_csv["label"] == label]  # Все семплы текущего класса
 
-                add_samples_number = max_class_length - len(current_class)
+                add_samples_number = max_class_length - len(current_class)  # Количество семплов, которое нужно добавить
 
+                # Рандомно выбираем необходимое количество семплов и добавляем к имеющимся:
+                # (replace=True означает, что выбранные семплы могут повторяться)
                 current_class_oversampled = pd.concat(
                     [
                         current_class,
@@ -29,7 +36,7 @@ class CrimeanPlantsDataset(Dataset):
                     ]
                 )
 
-                data_csv = pd.concat([data_csv, current_class_oversampled])
+                data_csv = pd.concat([data_csv, current_class_oversampled])  # Добавляем класс в общий список
 
             self.data_csv = data_csv
         else:
@@ -41,15 +48,16 @@ class CrimeanPlantsDataset(Dataset):
         return len(self.data_csv)
 
     def __getitem__(self, index):
-        img_path = os.path.join(self.root_dir, self.data_csv.iloc[index, 0])
+        img_path = os.path.join(self.root_dir, self.data_csv.iloc[index, 0])  # Полный путь к изображению
 
-        img = read_image(img_path).type(torch.FloatTensor)
-        img /= 255
+        img = read_image(img_path).type(torch.FloatTensor)  # Открываем изображение и конвертируем в тензор
+        img /= 255  # Стандартизация
 
+        # Если нужно, применяем трансформации:
         if self.transform:
             img = self.transform(img)
 
-        label = torch.tensor(self.data_csv.iloc[index, 1])
+        label = torch.tensor(self.data_csv.iloc[index, 1])  # Метка класса. int, tensor.
 
         return img, label
 
