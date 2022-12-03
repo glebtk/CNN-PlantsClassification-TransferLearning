@@ -3,7 +3,7 @@ import torchvision.transforms as transforms
 
 # Предустановки
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-MODEL = "mobilenet_v3_small"
+MODEL = "mobilenet_v3_large"
 IMAGE_SIZE = 224
 IN_CHANNELS = 3
 OUT_FEATURES = 50
