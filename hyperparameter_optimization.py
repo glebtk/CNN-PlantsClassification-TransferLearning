@@ -14,8 +14,8 @@ def objective(trial):
     models = ["alexnet", "convnext_tiny", "densenet121", "densenet201", "resnet18", "mobilenet_v3_small", "mobilenet_v3_large"]
 
     model_name = trial.suggest_categorical("model_name", models)
-    learning_rate = trial.suggest_float("learning_rate", 3e-5, 1e-2),
-    batch_size = trial.suggest_int("batch_size", 16, 128)
+    learning_rate = trial.suggest_float("learning_rate", 1e-5, 1e-4),
+    batch_size = trial.suggest_int("batch_size", 32, 128)
 
     writer = SummaryWriter(f"./tb/optim/mn={model_name}_lr={round(learning_rate[0], 5)}_bs={batch_size}")
 
