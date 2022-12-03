@@ -11,15 +11,16 @@ from torchvision.models import MobileNet_V3_Small_Weights
 
 
 class Model(nn.Module):
-    def __init__(self, model_name: str):
+    def __init__(self, model_name: str, freeze=False):
         super().__init__()
 
         if model_name == "alexnet":
             alexnet = models.alexnet(weights=AlexNet_Weights.IMAGENET1K_V1)
 
-            # "Замораживаем" градиенты в feature extractor сети:
-            for param in alexnet.features.parameters():
-                param.requires_grad = False
+            if freeze:
+                # "Замораживаем" градиенты в feature extractor сети:
+                for param in alexnet.features.parameters():
+                    param.requires_grad = False
 
             # Заменяем последний слой:
             in_features = alexnet.classifier[-1].in_features
@@ -30,9 +31,10 @@ class Model(nn.Module):
         if model_name == "convnext_tiny":
             convnext = models.convnext_tiny(weights=ConvNeXt_Tiny_Weights.IMAGENET1K_V1)
 
-            # "Замораживаем" градиенты в feature extractor сети:
-            for param in convnext.features.parameters():
-                param.requires_grad = False
+            if freeze:
+                # "Замораживаем" градиенты в feature extractor сети:
+                for param in convnext.features.parameters():
+                    param.requires_grad = False
 
             # Заменяем последний слой:
             in_features = convnext.classifier[-1].in_features
@@ -43,9 +45,10 @@ class Model(nn.Module):
         if model_name == "densenet121":
             densenet121 = models.densenet121(weights=DenseNet121_Weights.IMAGENET1K_V1)
 
-            # "Замораживаем" все слои нейросети:
-            for param in densenet121.features.parameters():
-                param.requires_grad = False
+            if freeze:
+                # "Замораживаем" все слои нейросети:
+                for param in densenet121.features.parameters():
+                    param.requires_grad = False
 
             # Заменяем классификатор:
             in_features = densenet121.classifier.in_features
@@ -64,9 +67,10 @@ class Model(nn.Module):
         if model_name == "densenet201":
             densenet201 = models.densenet201(weights=DenseNet201_Weights.IMAGENET1K_V1)
 
-            # "Замораживаем" все слои нейросети:
-            for param in densenet201.features.parameters():
-                param.requires_grad = False
+            if freeze:
+                # "Замораживаем" все слои нейросети:
+                for param in densenet201.features.parameters():
+                    param.requires_grad = False
 
             # Заменяем классификатор:
             in_features = densenet201.classifier.in_features
@@ -85,9 +89,10 @@ class Model(nn.Module):
         if model_name == "resnet18":
             resnet18 = models.resnet18(weights=ResNet18_Weights.DEFAULT)
 
-            # "Замораживаем" все слои нейросети:
-            for param in resnet18.parameters():
-                param.requires_grad = False
+            if freeze:
+                # "Замораживаем" все слои нейросети:
+                for param in resnet18.parameters():
+                    param.requires_grad = False
 
             # Заменяем последний слой:
             in_features = resnet18.fc.in_features
@@ -98,9 +103,10 @@ class Model(nn.Module):
         if model_name == "mobilenet_v3_small":
             mobilenet = models.mobilenet_v3_small(weights=MobileNet_V3_Small_Weights.IMAGENET1K_V1)
 
-            # "Замораживаем" градиенты в feature extractor сети:
-            for param in mobilenet.features.parameters():
-                param.requires_grad = False
+            if freeze:
+                # "Замораживаем" градиенты в feature extractor сети:
+                for param in mobilenet.features.parameters():
+                    param.requires_grad = False
 
             # Заменяем последний слой:
             in_features = mobilenet.classifier[-1].in_features
@@ -111,9 +117,10 @@ class Model(nn.Module):
         if model_name == "mobilenet_v3_large":
             mobilenet = models.mobilenet_v3_large(weights=MobileNet_V3_Large_Weights.IMAGENET1K_V1)
 
-            # "Замораживаем" градиенты в feature extractor сети:
-            for param in mobilenet.features.parameters():
-                param.requires_grad = False
+            if freeze:
+                # "Замораживаем" градиенты в feature extractor сети:
+                for param in mobilenet.features.parameters():
+                    param.requires_grad = False
 
             # Заменяем последний слой:
             in_features = mobilenet.classifier[-1].in_features
