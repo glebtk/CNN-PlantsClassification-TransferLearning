@@ -11,7 +11,10 @@ LOAD_CHECKPOINT = True      # Загрузить чекпоинт с предо�
 def download_and_unzip(url, path, name):
     full_path = os.path.join(path, name)
 
-    urllib.request.urlretrieve(url, full_path)
+    try:
+        urllib.request.urlretrieve(url, full_path)
+    except FileNotFoundError:
+        os.mkdir(path)
 
     dataset_zip = zipfile.ZipFile(full_path, 'r')
     dataset_zip.extractall(path)
