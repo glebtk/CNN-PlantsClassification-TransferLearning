@@ -15,6 +15,7 @@ def download_and_unzip(url, path, name):
         urllib.request.urlretrieve(url, full_path)
     except FileNotFoundError:
         os.mkdir(path)
+        urllib.request.urlretrieve(url, full_path)
 
     dataset_zip = zipfile.ZipFile(full_path, 'r')
     dataset_zip.extractall(path)
