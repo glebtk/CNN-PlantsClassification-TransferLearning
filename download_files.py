@@ -31,7 +31,7 @@ def download_files():
     if LOAD_CHECKPOINT:
         url = "https://gitlab.com/glebtutik/crimean_plants_classification_files/-/raw/main/checkpoints/plants_model_checkpoint.zip"
         path = "checkpoints"
-        file_name = "checkpoints.zip"
+        file_name = "plants_model_checkpoint.zip"
 
         download_and_unzip(url, path, file_name)
         os.remove(os.path.join(path, file_name))
