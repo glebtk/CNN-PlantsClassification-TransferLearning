@@ -1,13 +1,12 @@
 ##  Crimean Plants Classification
 
-![Example][example]
-
+![Example][example]<br>
 
 ## О проекте
-**Проект** решает задачу классификации изображений на 50-ти классах растений.
+Проект решает задачу классификации изображений на 50-ти классах растений.
 В процессе поиска оптимальной модели для **transfer learning** была 
 выбрана модель **MobileNetV3_Large** предварительно обученная 
-на датасете ImageNet. На данный момент она имеет **точность 0.99** на
+на датасете **ImageNet**. На данный момент она имеет **точность 0.99** на
 тестовой выборке из 1500 изображений растений.
 
 **Датасет** для обучения модели **собран автоматически** путём парсинга 
@@ -78,7 +77,8 @@
 - **[PyTorch](https://pytorch.org)** - фреймворк глубокого обучения.<br>
 - **[TensorBoard](https://pytorch.org/docs/stable/tensorboard.html)** - отслеживание процесса обучения в реальном времени.<br> 
 - **[Optuna](https://optuna.org)** - поиск оптимальных гиперпараметров.<br>
-- **[Selenium](https://www.selenium.dev)** - парсинг датасета с Яндекс Картинок.<br><br>
+- **[Selenium](https://www.selenium.dev)** - парсинг датасета с Яндекс Картинок.
+- **[Pandas](https://pandas.pydata.org)** - работа с CSV-файлами.<br><br>
 
 
 #### Transfer learning
@@ -97,7 +97,7 @@ models = ["alexnet", "convnext_tiny", "densenet121", "densenet201", "resnet18", 
 </details>
 
 Из выбранных **7-ми** моделей 
-наиболее точные результаты показала модель 
+наиболее точные результаты показала 
 [ConvNeXt_Tiny](https://pytorch.org/vision/stable/models/generated/torchvision.models.convnext_tiny.html),
 доступная по умолчанию в torchvision. 
 Однако, ввиду её тяжеловесности, предпочтение было отдано модели
@@ -114,6 +114,7 @@ mobilenet.classifier[-1] = nn.Linear(in_features=in_features, out_features=confi
 Так как изначально сеть обучалась на датасете ImageNet, который содержит
 1000 классов, количество выходных нейронов у нее было равно тысяче.
 После замены слоя, их количество стало равняться 50-ти. 
+Была добавлена возможность "заморозки" градиентов в feature extractor.<br>
 В остальном модель оставлена без изменений.<br><br>
 
 
@@ -158,8 +159,55 @@ mobilenet.classifier[-1] = nn.Linear(in_features=in_features, out_features=confi
 
 ## Датасет
 
-## Результаты
+Датасет содержит **13.723 цветных изображения** растений относящихся к 50 классам.
+Из них **12.223** составляют тренировочную выборку, и **1.500** тестовую.
 
+<details>
+    <summary><strong>Структура датасета</strong></summary>
+
+```
+dataset                                 
+├── test                                        # Директория тестовых изображений
+│   ├── Adenophora liliifolia                   # Директория 1-го класса
+│   │   ├──adenophora_liliifolia_test_1.jpg     
+│   │   ├──adenophora_liliifolia_test_2.jpg
+│   │               ...
+│   │               
+│   ├── Adiantum capillus-veneris               # Директория 2-го класса
+│               ...
+│
+├── train                                       # Директория тренировочных изображений
+│   ├── Adenophora liliifolia                   # Директория 1-го класса
+│   │   ├──adenophora_liliifolia_train_1.jpg
+│   │   ├──adenophora_liliifolia_train_2.jpg
+│   │               ...
+│   │
+│   ├── Adiantum capillus-veneris               # Директория 2-го класса
+│               ...
+│
+├── test_labels.csv                             # Тестовый CSV-файл содержащий столбцы path и label (путь к изображению и метка класса)
+└── train_labels.csv                            # Тренировочный CSV-файл содержащий столбцы path и label
+```
+
+</details>
+
+Пример случайных изображений из датасета:
+
+![Dataset](https://i.imgur.com/1ZqRspx.png)
+
+- Каждое изображение относится только к **одному** классу. 
+- В среднем, на класс приходится **274** изображения.
+- Минимальный размер изображения: **256x256 px**.
+- Среднее по датасету (mean):   `[0.4074, 0.4307, 0.2870]`.
+- Стандартное отклонение (std): `[0.2128, 0.2006, 0.2053]`.
+
+Датасет доступен по 
+[прямой ссылке](https://gitlab.com/glebtutik/crimean_plants_classification_files/-/raw/main/data/dataset.zip).
+
+
+## Процесс обучения и результаты
+модель имет точность 99%
+матрица, графики
 ## Как запустить проект?
 
 ## Способы связи
