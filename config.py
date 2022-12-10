@@ -25,8 +25,8 @@ MEAN = torch.Tensor([0.485, 0.456, 0.406])
 STD = torch.Tensor([0.229, 0.224, 0.225])
 
 # Mean и std датасета растений:
-# MEAN = torch.Tensor([0.4056, 0.4354, 0.2909])
-# STD = torch.Tensor([0.2074, 0.1983, 0.2063])
+# MEAN = torch.Tensor([0.4074, 0.4307, 0.2870])
+# STD = torch.Tensor([0.2128, 0.2006, 0.2053])
 
 # Другое
 CHECKPOINT_DIR = "checkpoints"
