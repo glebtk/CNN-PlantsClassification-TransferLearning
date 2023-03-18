@@ -2,94 +2,93 @@
 
 ![Example][example]<br>
 
-## О проекте
-Проект решает задачу классификации изображений на 50-ти классах растений.
+## About the project
+The project solves the task of image classification into 50 classes of plants.
 
-В процессе поиска оптимальной модели для **transfer learning** была 
-выбрана модель **MobileNetV3_Large** предварительно обученная 
-на датасете **ImageNet**. На данный момент она имеет **точность 0.99** на
-тестовой выборке из 1500 изображений растений.
+In the process of finding the optimal model for **transfer learning**, 
+the **MobileNetV3_Large** model was chosen, which was pre-trained 
+on the ImageNet dataset. Currently, it has an accuracy 
+of 0.99 on the test sample of 1500 plant images.
 
-**Датасет** для обучения модели **собран автоматически** путём парсинга 
-Яндекс Картинок, и включает в себя, в общей сложности, 13.723 
-изображения растений. О датасете подробнее [в этом разделе](#датасет).
-
+The **dataset** for training the model was **collected automatically**
+ by parsing Yandex Images and includes a total of 13,723 plant images. More information about the dataset can be found [in this section](#dataset).
 
 
 <details>
-    <summary><strong>Структура проекта</strong></summary>
-    
-Такую структуру имеет проект *после* выполнения скрипта `download_files.py`, 
-который загружает чекпоинт и датасет:
+    <summary><strong>Project structure</strong></summary>
+
+This is the structure of the project **after** running the `download_files.py` script, 
+which downloads the checkpoint and the dataset:
+
 ```
 .
 ├── checkpoints                                 
 │   └── plants_model_checkpoint
-│       └── plants_model.pth.tar                # Чекпоинт модели
+│       └── plants_model.pth.tar                # Model checkpoint
 │
 ├── data                                        
 │   ├── dataset                                 
-│   │   ├── test                                # Директория тестовых изображений
+│   │   ├── test                                # Test image directory
 │   │   │   ├── Adenophora liliifolia
 │   │   │   ├── Adiantum capillus-veneris
 │   │   │               ...
-│   │   ├── train                               # Директория тренировочных изображений
+│   │   ├── train                               # Training image directory
 │   │   │   ├── Adenophora liliifolia
 │   │   │   ├── Adiantum capillus-veneris
 │   │   │               ...
-│   │   ├── test_labels.csv                     # Тестовый CSV-файл
-│   │   └── train_labels.csv                    # Тренировочный CSV-файл
-│   └── crimean_plants.csv                      # CSV-файл содержащий названия растений и метку класса
+│   │   ├── test_labels.csv                     # Test CSV file
+│   │   └── train_labels.csv                    # Training CSV file
+│   └── crimean_plants.csv                      # CSV file containing plant names and class label
 │
 ├── dataset_preparation                         
 │   ├── parsing
 │   │   ├── data
-│   │   │   └── crimean_plants.csv              # CSV-файл содержащий названия растений и метку класса
+│   │   │   └── crimean_plants.csv              # CSV file containing plant names and class label
 │   │   ├── geckodriver
-│   │   │   └── geckodriver.exe                 # Драйвер для управления FireFox
-│   │   ├── parsing.py                          # Скрипт парсинга растений
-│   │   ├── parsing_utils.py                    # Утилиты, необходимые при парсинге
-│   │   └── yandex_images_parser.py             # Парсер. (Мой проект с парсером - gitlab.com/gleb_tk/yandex_images_parser)
+│   │   │   └── geckodriver.exe                 # Driver for controlling FireFox
+│   │   ├── parsing.py                          
+│   │   ├── parsing_utils.py                    # Utilities required for parsing
+│   │   └── yandex_images_parser.py             # Parser. (My parser project - gitlab.com/glebtutik/yandex_images_parser)
 │   ├── cleaning                                 
-│   │   ├── cleaning.py                         # Скрипт очистки датасета 
-│   │   └── cleaning_utils.py                   # Утилиты, необходимые при очистке датасета
+│   │   ├── cleaning.py                         # Script for cleaning the dataset
+│   │   └── cleaning_utils.py                   # Utilities required for cleaning the dataset
 │   └── labeling
-│       ├── labeling.py                         # Скрипт разметки данных
-│       └── labeling_utils.py                   # Утилиты, необходимые при очистке данных
+│       ├── labeling.py                         # Data labeling script
+│       └── labeling_utils.py                   # Utilities required for cleaning the data
 │
-├── config.py                                   # Конфигурации
-├── dataset.py                                  # Класс датасета
-├── download_files.py                           # Скрипт, загружающий датасет и чекпоинт модели
-├── hyperparameter_optimization.py              # Скрипт поиска оптимальных гиперпараметров 
-├── model.py                                    # Класс модели
-├── train.py                                    # Скрипт обучения модели
-├── utils.py                                    # Утилиты 
-├── requirements.txt                            # Зависимости проекта
+├── config.py                                   # Configurations
+├── dataset.py                                  # Dataset class
+├── download_files.py                           # Script for downloading the dataset and model checkpoint
+├── hyperparameter_optimization.py              # Script for searching for optimal hyperparameters
+├── model.py                                    # Model class
+├── train.py                                    # Model training script
+├── utils.py                                    # Utilities
+├── requirements.txt                            # Project requirements
 └── README.md
 ```
 </details>
 
 
-## Технические решения
+## Technical solutions
 
-#### Основные технологии
+#### Main technologies
 
 - **[Python 3.9](https://www.python.org/downloads/release/python-390/)**<br> 
-- **[PyTorch](https://pytorch.org)** - фреймворк глубокого обучения.<br>
-- **[TensorBoard](https://pytorch.org/docs/stable/tensorboard.html)** - отслеживание процесса обучения в реальном времени.<br> 
-- **[Optuna](https://optuna.org)** - поиск оптимальных гиперпараметров.<br>
-- **[Selenium](https://www.selenium.dev)** - парсинг датасета с Яндекс Картинок.
-- **[Pandas](https://pandas.pydata.org)** - работа с CSV-файлами.<br><br>
+- **[PyTorch](https://pytorch.org)** - deep learning framework.<br>
+- **[TensorBoard](https://pytorch.org/docs/stable/tensorboard.html)** - real-time tracking of the training process.<br> 
+- **[Optuna](https://optuna.org)** - search for optimal hyperparameters.<br>
+- **[Selenium](https://www.selenium.dev)** - dataset parsing from Yandex Images.
+- **[Pandas](https://pandas.pydata.org)** - work with CSV files.<br><br>
 
 
 #### Transfer learning
 
-Поскольку стояла задача добиться высокой точности на маленьком датасете,
-было принято решение 
-использовать **предобученную модель**.
+Since the task was to achieve high accuracy on a small dataset,
+the decision was made
+to use a **pretrained model**.
 
 <details>
-    <summary><strong>Список опробованных моделей</strong></summary>
+    <summary><strong>List of models tested</strong></summary>
 
 ```python
 models = ["alexnet", "convnext_tiny", "densenet121", "densenet201", "resnet18", "mobilenet_v3_small", "mobilenet_v3_large"]
@@ -97,178 +96,166 @@ models = ["alexnet", "convnext_tiny", "densenet121", "densenet201", "resnet18", 
 
 </details>
 
-Из выбранных **7-ми** моделей 
-наиболее точные результаты показала 
-[ConvNeXt_Tiny](https://pytorch.org/vision/stable/models/generated/torchvision.models.convnext_tiny.html),
-доступная по умолчанию в torchvision. 
-Однако, ввиду её тяжеловесности, предпочтение было отдано модели
-[MobileNet_V3_Large](https://pytorch.org/vision/stable/models/generated/torchvision.models.mobilenet_v3_large.html),
-которая демонстрировала сравнимые по точности результаты, но при этом имела 
-**в 5.2 раза меньше параметров**.
+Out of the selected 7 models, the most accurate results were shown by [ConvNeXt_Tiny](https://pytorch.org/vision/stable/models/generated/torchvision.models.convnext_tiny.html),
+ which is available by default in torchvision. However, due to its weight, preference was 
+given to the [MobileNet_V3_Large](https://pytorch.org/vision/stable/models/generated/torchvision.models.mobilenet_v3_large.html) 
+model, which demonstrated comparable accuracy results, but was **5.2 times lighter in terms of parameters**.
 
-Последний полносвязный слой классификатора в MobileNet был заменен: 
+The last fully connected layer of the classifier in MobileNet was replaced: 
 ```python
-# Заменяем последний слой:
+# Replace the last layer:
 in_features = mobilenet.classifier[-1].in_features
 mobilenet.classifier[-1] = nn.Linear(in_features=in_features, out_features=config.OUT_FEATURES)
 ```
-Так как изначально сеть обучалась на датасете ImageNet, который содержит
-1000 классов, количество выходных нейронов у нее было равно тысяче.
-После замены слоя, их количество стало равняться 50-ти. 
-Была добавлена возможность "заморозки" градиентов в feature extractor.<br>
-В остальном модель оставлена без изменений.<br><br>
+
+Since the network was initially trained on the ImageNet dataset, which contains
+1000 classes, its number of outputs was equal to a thousand.
+After the layer was replaced, their number became equal to 50.
+The ability to "freeze" gradients in the feature extractor was added.<br>
+Otherwise, the model was left unchanged.<br><br>
 
 
-#### Парсинг изображений и подготовка датасета
+#### Image Parsing and Dataset Preparation
 
-Для **парсинга** изображений был использован ранее написанный мной [парсер
-Яндекс Картинок](https://gitlab.com/gleb_tk/yandex_images_parser).<br>
-Применительно к отдельно взятому растению, производился поиск 200
-изображений по его латинскому названию. Далее **для каждого** из первых 20 
-результатов выдачи производился поиск 40 похожих изображений.  
+The [Yandex Images Parser](https://github.com/glebtk/yandex_images_parser) 
+I previously wrote was used for parsing images.<br>
 
-На этапе **очистки** датасета все изображения проходили проверку
-на соответствие условиям, удалялись дубликаты.
-После чего изображения были отмасштабированы.
+For a particular plant, a search was made for 200 images based on its Latin name. 
+Then, for each of the first 20 search results, a search was made for 40 similar images.
 
-Подробнее про **алгоритм очистки** можно прочитать под спойлером:
+At the **cleaning** stage of the dataset, all images went through a check
+ for compliance with the conditions, duplicates were removed.
+After that, the images were resized.
+	
+More detailed about **data cleaning algorithm** you can read here:
 
 <details>
-    <summary><strong>Алгоритм очистки датасета</strong></summary>
+    <summary><strong>Data Cleansing Algorythm</strong></summary>
 
-Для изображений, относящихся к одному классу, применяем 
-следующие шаги:
+For images belonging to the same class, the following steps are applied:
 
-1. Проверяем, все ли изображения являются действительными, удаляем мусор.
-2. Удаляем изображения, которые не удовлетворяют заданным условиям 
-(размер >= 256 пикселей по меньшей стороне, цветовой режим RGB)
-3. Удаляем дубликаты изображений. Для этого, с использованием библиотеки
-[ImageHash](https://pypi.org/project/ImageHash/), получаем 
-[average_hash](https://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html) 
-избражений и удаляем изображения имеющие 
-одинаковые или близкие хэши.
-4. Масштабируем изображения до 256px по меньшей стороне.
-5. Сохраняем изображения в отдельную директорию.
-6. Готово! Переходим к следующему классу.
+1. Check if all images are valid, remove garbage.
+2. Remove images that do not meet the specified conditions (size >= 256 pixels on the smaller side, RGB color mode)
+3. Remove duplicate images. To do this, using the [ImageHash](https://pypi.org/project/ImageHash/) library, we obtain the [average_hash](https://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html) of the images and delete images with the same or similar hashes.
+4. Scale the images to 256px on the smaller side.
+5. Save the images in a separate directory.
+6. Done! Move on to the next class.
 
-Финальную очистку производим вручную.
+The final cleaning is performed manually.
 
 </details>
 
-При **разметке** изображения разбивались на тренировочную и тестовую выборки.
-Пути к изображениям и метки класса сохранялись в CSV-файл.
+The images were divided into training and test datasets during the **labeling** process. 
+The paths to the images and class labels were saved in a CSV file.
 
-## Датасет
+## Dataset
 
-Датасет содержит **13.723 цветных изображения** растений относящихся к 50 классам.
-Из них **12.223** составляют тренировочную выборку, и **1.500** тестовую.
+The dataset contains **13,723 color images** of plants belonging to 50 
+classes. Out of these, **12,223** are in the training set, and **1,500** in the test set.
 
-Пример случайных изображений из датасета:
+Example of random images from the dataset:
 
 ![Dataset](https://i.imgur.com/1ZqRspx.png)
 
-- Каждое изображение относится только к **одному** классу. 
-- В среднем, на класс приходится **274** изображения.
-- Минимальный размер изображения: **256x256 px**.
-- Среднее по датасету (mean):   `[0.4074, 0.4307, 0.2870]`.
-- Стандартное отклонение (std): `[0.2128, 0.2006, 0.2053]`.
+- Each image belongs to **only one** class.
+- On average, there are **274** images per class.
+- Minimum image size: **256x256 px**.
+- Mean across the dataset: `[0.4074, 0.4307, 0.2870]`.
+- Standard deviation: `[0.2128, 0.2006, 0.2053]`.
+
 
 <details>
-    <summary><strong>Структура датасета</strong></summary>
+    <summary><strong>Dataset Structure</strong></summary>
 
 ```
 dataset                                 
-├── test                                        # Директория тестовых изображений
-│   ├── Adenophora liliifolia                   # Директория 1-го класса
+├── test                                        # Test images directory
+│   ├── Adenophora liliifolia                   # Class 1 directory
 │   │   ├──adenophora_liliifolia_test_1.jpg     
 │   │   ├──adenophora_liliifolia_test_2.jpg
 │   │               ...
 │   │               
-│   ├── Adiantum capillus-veneris               # Директория 2-го класса
+│   ├── Adiantum capillus-veneris               # Class 2 directory
 │               ...
 │
-├── train                                       # Директория тренировочных изображений
-│   ├── Adenophora liliifolia                   # Директория 1-го класса
+├── train                                       # Training images directory
+│   ├── Adenophora liliifolia                   # Class 1 directory
 │   │   ├──adenophora_liliifolia_train_1.jpg
 │   │   ├──adenophora_liliifolia_train_2.jpg
 │   │               ...
 │   │
-│   ├── Adiantum capillus-veneris               # Директория 2-го класса
+│   ├── Adiantum capillus-veneris               # Class 2 directory
 │               ...
 │
-├── test_labels.csv                             # Тестовый CSV-файл содержащий столбцы path и label (путь к изображению и метка класса)
-└── train_labels.csv                            # Тренировочный CSV-файл содержащий столбцы path и label
+├── test_labels.csv                             # Test CSV file containing columns path and label
+└── train_labels.csv                            # Training CSV file containing columns path and label
 ```
 
 </details>
 
-Датасет в доступен по прямой ссылке: 
+The dataset is available through the following direct link: 
 [dataset.zip](https://gitlab.com/glebtutik/crimean_plants_classification_files/-/raw/main/data/dataset.zip)
 (~274MB).
 
-## Процесс обучения и результаты
+## Training Process and Results
 
-В процессе поиска были найдены следующие гиперпараметры:
+The following hyperparameters were found during the search:
 
 ```python
 BATCH_SIZE = 90
 LEARNING_RATE = 9e-05
 ```
 
-Модель обучалась в течении 20-ти эпох.
-Лучшая точность на тестовой выборке составила **accuracy = 0.99**, и была 
-достигнута после 18-й эпохи.
+The model was trained for 20 epochs. The best test accuracy was **0.99**, and was
+achieved after the 18th epoch.
 
-Ниже предоставлена confusion matrix и графики обучения модели.
+Below is the confusion matrix and training model graphs.
 
 <details>
-    <summary><strong>Графики и матрица</strong></summary>
+    <summary><strong>Graphs and matrix</strong></summary>
 
-**Графики**, полученные в процессе обучения (accuracy, loss):
+**Graphs** obtained during training (accuracy, loss):
 
 ![Accuracy, Loss](https://i.imgur.com/caJE8S3.jpg)
 
-**Confusion matrix** (матрица несоответствий):
+**Confusion matrix**:
 
 ![Confusion matrix](https://i.imgur.com/XGxscVO.jpg)
-
-В большем размере матрицу можно посмотреть по 
-[ссылке](https://i.imgur.com/Nhkkeex.jpeg).
 
 </details>
 
 
-## Как запустить проект?
+## How to launch this project?
 
-1. Клонируйте репозиторий:
+1. Clone the repository:
 ```bash
-$ git clone https://gitlab.com/gleb_tk/crimean_plants_classification.git
+$ git clone https://github.com/glebtk/crimean_plants_classification.git
 ```
 
-2. Перед использованием необходимо установить зависимости проекта.<br>
-**Перейдите** в директорию склонированного репозитория 
+2. Before using it, you need to install the project requirements.<br>
+Go to the cloned repository directory
 
 ```bash
-$ cd путь/к/директории
+$ cd path/to/directory
 ```
 
-и выполните следующую команду:
+and run this command:
 
 ```bash
 $ pip install -r requirements.txt
 ```
 
-3. Убедитесь, что все зависимости успешно установлены.
-4. Выполните скрипт `download_files.py`. Он загрузит датасет и 
-чекпоинт модели в правильные места:
+3. Make sure that all dependencies are successfully installed.
+4. Execute the script `download_files.py `. It will load the dataset and
+the checkpoint of the model in the right places:
 
 ```bash
 $ python download_files.py
 ```
 
-5. Готово! Можно запускать проект.
+5. Done! You can run the project.
 
-## Способы связи
+## Contact information 
 
 [![Mail](https://i.imgur.com/HILZFT2.png)](mailto:tutikgv@gmail.com)
 **E-mail:**
