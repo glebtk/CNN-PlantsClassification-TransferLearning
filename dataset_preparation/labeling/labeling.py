@@ -7,83 +7,83 @@ from labeling_utils import make_directory
 
 
 def labeling(dataset_dir: str, test_number: int = 30, remove_source: bool = False):
-    # Переименовываем директорию датасета:
+    # Renaming the dataset directory:
     source_dir = "./data/dataset_source"
     os.rename(dataset_dir, source_dir)
 
-    # Создаём новые директории для сохранения результата:
+    # Make new directories to save the result:
     train_dir = os.path.join(dataset_dir, "train")
     test_dir = os.path.join(dataset_dir, "test")
 
-    make_directory(dataset_dir)  # Общая директория датасета
-    make_directory(train_dir)  # Тренировочные изображения
-    make_directory(test_dir)  # Тестовые изображения
+    make_directory(dataset_dir)  # General dataset directory
+    make_directory(train_dir)  # Train images
+    make_directory(test_dir)  # Test images
 
     train_labels = pd.DataFrame(columns=["path", "label"])
     test_labels = pd.DataFrame(columns=["path", "label"])
 
     dirs = os.listdir(source_dir)
 
-    # Проходимся циклом по всем директориям с изображениями:
+    # Cycle through all directories with images:
     for label, dir_ in enumerate(dirs):
         current_dir_path = os.path.join(source_dir, dir_)
 
         if not os.path.isdir(current_dir_path):
             continue
 
-        print(f"\033[32m\033[1mОбработка:\033[0m {label+1}. {dir_}")
+        print(f"\033[32m\033[1mProcessing:\033[0m {label+1}. {dir_}")
 
-        # Создаём в train и test соответствующие директории:
+        # Create the corresponding directories in train and test:
         make_directory(os.path.join(train_dir, dir_))
         make_directory(os.path.join(test_dir, dir_))
 
         label_name = dir_.lower().replace(" ", "_").replace("-", "_")
 
-        image_names = os.listdir(current_dir_path)  # Имена изображений в текущей директории
-        random.shuffle(image_names)  # Перемешиваем имена изображений
+        image_names = os.listdir(current_dir_path)  # Names of images in the current directory
+        random.shuffle(image_names)  # Shuffle the names of the images
 
-        # Разделяем на test и train:
+        # Split into test and train:
         train_number = len(image_names) - test_number
         train_image_names = image_names[:train_number]
         test_image_names = image_names[train_number:]
 
-        # Проходимся циклом по обучающей выборке:
+        # Cycle through the training sample:
         for number, name in enumerate(train_image_names):
-            new_name = label_name + "_train_" + str(number + 1) + ".jpg"  # Новое имя изображения
+            new_name = label_name + "_train_" + str(number + 1) + ".jpg"  # New image name
 
-            old_path = os.path.join(current_dir_path, name)  # Текущий путь к изображению
-            new_path = os.path.join(*[train_dir, dir_, new_name])  # Новый путь изображения
+            old_path = os.path.join(current_dir_path, name)  # Current path to the image
+            new_path = os.path.join(*[train_dir, dir_, new_name])  # New path to the image
 
-            # Добавляем запись в csv-фaйл:
+            # Adding to the csv file:
             record = pd.DataFrame({"path": [f"train/{dir_}/{new_name}"], "label": [label]})
             train_labels = pd.concat([train_labels, record])
 
-            # Перемещаем и переименовываем изображение:
+            # Moving and renaming the image:
             shutil.copyfile(old_path, new_path)
 
-        # Проходимся циклом по тестовой выборке:
+        # Cycle through the test sample:
         for number, name in enumerate(test_image_names):
-            new_name = label_name + "_test_" + str(number + 1) + ".jpg"  # Новое имя изображения
+            new_name = label_name + "_test_" + str(number + 1) + ".jpg"  # New image name
 
-            old_path = os.path.join(current_dir_path, name)  # Текущий путь к изображению
-            new_path = os.path.join(*[test_dir, dir_, new_name])  # Новый путь изображения
+            old_path = os.path.join(current_dir_path, name)  # Current image path
+            new_path = os.path.join(*[test_dir, dir_, new_name])  # New image path
 
-            # Добавляем запись в csv-фaйл:
+            # Adding to the csv file:
             record = pd.DataFrame({"path": [f"test/{dir_}/{new_name}"], "label": [label]})
             test_labels = pd.concat([test_labels, record])
 
-            # Перемещаем и переименовываем изображение:
+            # Moving and renaming the image:
             shutil.copyfile(old_path, new_path)
 
-    # Если требуется, удаляем изначальную директорию:
+    # If necessary, delete the original directory:
     if remove_source:
         shutil.rmtree(source_dir)
 
-    # Сохраняем csv-файлы:
+    # Saving csv-fies:
     train_labels.to_csv("./data/dataset/train_labels.csv", index=False)
     test_labels.to_csv("./data/dataset/test_labels.csv", index=False)
 
-    print("\033[32m\033[1m\n\t...Готово!\033[0m")
+    print("\033[32m\033[1m\n\t...Done!\033[0m")
 
 
 if __name__ == "__main__":

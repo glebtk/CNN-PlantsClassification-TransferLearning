@@ -1,7 +1,6 @@
 import torch
 import torchvision.transforms as transforms
 
-# Предустановки
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 MODEL = "mobilenet_v3_large"
 IMAGE_SIZE = 224
@@ -9,7 +8,7 @@ IN_CHANNELS = 3
 OUT_FEATURES = 50
 NUM_WORKERS = 2
 
-# Обучение
+# Training
 NUM_EPOCHS = 100
 BATCH_SIZE = 90
 LEARNING_RATE = 9e-05
@@ -17,18 +16,14 @@ LEARNING_RATE = 9e-05
 LOAD_MODEL = False
 SAVE_BEST_MODEL = True
 
-# Датасет
+# Dataset
 DATASET_DIR = "./data/dataset"
 
-# Mean и std imagenet:
+# Mean and std (imagenet):
 MEAN = torch.Tensor([0.485, 0.456, 0.406])
 STD = torch.Tensor([0.229, 0.224, 0.225])
 
-# Mean и std датасета растений:
-# MEAN = torch.Tensor([0.4074, 0.4307, 0.2870])
-# STD = torch.Tensor([0.2128, 0.2006, 0.2053])
-
-# Другое
+# Other
 CHECKPOINT_DIR = "checkpoints"
 CHECKPOINT_NAME = "plants_model.pth.tar"
 

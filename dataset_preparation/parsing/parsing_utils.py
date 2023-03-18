@@ -8,7 +8,7 @@ from dataset_preparation.parsing.yandex_images_parser import Parser
 
 
 def find_images(plant: str, number: int, delay: float = 6.0, **kwargs) -> list:
-    """Выполняет поиск картинок по запросу, возвращает список ссылок"""
+    """Searches for images on request, returns a list of links"""
     parser = Parser()
     delay = randomize_delay(delay)
 
@@ -16,7 +16,7 @@ def find_images(plant: str, number: int, delay: float = 6.0, **kwargs) -> list:
 
 
 def find_similar_images(url: str, number: int, delay: float = 6.0, **kwargs) -> list:
-    """Выполняет поиск похожих изображений, возвращает список ссылок"""
+    """Searches for similar images, returns a list of links"""
     parser = Parser()
     delay = randomize_delay(delay)
 
@@ -32,7 +32,7 @@ def make_directory(dir_path: str):
 
 
 def remove_duplicates(urls: list) -> list:
-    """Удаляет дублирующиеся URL-ссылки из списка, возвращает список уникальных ссылок"""
+    """Removes duplicate URL from the list, returns a list of unique links"""
 
     unique_urls = []
     for url in urls:
@@ -58,9 +58,9 @@ def save_images(urls: list, dir_path: str, prefix: str = "", number_images: bool
         except Exception:
             broken_url_counter += 1
 
-    print(f"Сохранено изображений: {len(urls) - broken_url_counter}.\tНеудачно: {broken_url_counter}.\n")
+    print(f"Saved images: {len(urls) - broken_url_counter}.\tUnsuccessful: {broken_url_counter}.\n")
 
 
 def randomize_delay(delay: float) -> float:
-    """Добавляет рандома в задержку. Возвращает полученное число измененное случайным образом на 15%."""
+    """Adds randomness to the delay. Returns the resulting number changed randomly by 15%."""
     return delay * random.uniform(0.85, 1.15)

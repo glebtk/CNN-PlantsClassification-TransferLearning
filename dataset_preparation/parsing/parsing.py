@@ -18,26 +18,26 @@ def main():
 
     df_plants = pd.read_csv("./data/crimean_plants.csv")
 
-    # Проходимся циклом по латинским названиям растений:
+    # Going through the cycle of Latin names of plants:
     for plant in df_plants["Latin"]:
-        print(f"\033[32m\033[1mТекущее растение:\033[0m {plant}.")
+        print(f"\033[32m\033[1mCurrent plant:\033[0m {plant}.")
 
-        # Получаем ссылки на изображения с растением:
-        print(f"\n1.Поиск изображений по запросу \"{plant}\":")
+        # Get links to images with a plant:
+        print(f"\n1.Image search by request \"{plant}\":")
         plants_urls = find_images(plant=plant, number=number_of_images, image_type="photo", delay=randomize_delay(delay))
 
-        # Получаем ссылки на изображения похожие на первые number_of_similar_images изображений:
-        print(f"\n2.Поиск изображений похожих на первые {number_of_similar_images} из найденных:")
+        # We get links to images similar to the first number_of_similar_images:
+        print(f"\n2.Search for images similar to the first {number_of_similar_images} found:")
         for url in plants_urls[:number_of_similar_images]:
             time.sleep(randomize_delay(delay))
             similar_plants_urls = find_similar_images(url=url, number=40, delay=randomize_delay(delay))
             plants_urls += similar_plants_urls
 
-        # Удаляем дублирующиеся ссылки:
+        # Removing duplicate links:
         plants_urls = remove_duplicates(plants_urls)
 
-        # Сохраняем найденные изображения:
-        print("\n3.Загрузка изображений:")
+        # Save the found images:
+        print("\n3.Uploading:")
 
         dir_path = os.path.join(img_dir, str(plant))
         make_directory(dir_path=dir_path)

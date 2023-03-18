@@ -5,8 +5,6 @@ import torch.nn as nn
 import torch.optim as optim
 
 from tqdm import tqdm
-from torch.utils.data import DataLoader
-from torch.utils.tensorboard import SummaryWriter
 from model import Model
 from utils import model_test
 from utils import make_directory
@@ -14,7 +12,9 @@ from utils import load_checkpoint
 from utils import save_checkpoint
 from utils import get_current_time
 from utils import get_last_checkpoint
+from torch.utils.data import DataLoader
 from dataset import CrimeanPlantsDataset
+from torch.utils.tensorboard import SummaryWriter
 
 
 def train(model, opt, data_loader, num_epochs, current_epoch=0, writer=None, criterion=None):
@@ -23,62 +23,62 @@ def train(model, opt, data_loader, num_epochs, current_epoch=0, writer=None, cri
         writer = SummaryWriter(f"./tb/train/{get_current_time()}")
 
     if criterion is None:
-        # Находим веса классов:
+        # Finding the class weights:
         dataset_len = len(data_loader.dataset)
         class_value_counts = data_loader.dataset.data_csv["label"].value_counts(sort=False)
         class_weights = torch.Tensor([dataset_len / (x * config.OUT_FEATURES) for x in class_value_counts])
         class_weights = class_weights.to(config.DEVICE)
 
-        # Определяем Loss-функцию и передаем в нее веса классов:
+        # Define the Loss function and pass the class weights to it:
         criterion = nn.CrossEntropyLoss(weight=class_weights)
 
-    # Находим лучшую (текущую) точность сети:
+    # Finding the best (current) network accuracy:
     best_accuracy = model_test(model)
 
-    # Цикл обучения:
+    # Learning cycle:
     for epoch in range(current_epoch + 1, num_epochs + 1):
 
-        model.train()  # Переключение модели в режим обучения
+        model.train()  # Switching the model to training mode
 
         epoch_loss = 0.0
         for idx, (images, labels) in enumerate(tqdm(data_loader)):
             images = images.to(config.DEVICE)
             labels = labels.to(config.DEVICE)
 
-            # Получаем предсказания модели для текущего батча:
+            # Getting model predictions for the current batch:
             predictions = model(images).to(config.DEVICE)
 
-            # Вычисляем loss:
+            # Calculating the loss:
             loss = criterion(predictions, labels)
             epoch_loss += loss
 
-            # Обновляем веса модели:
+            # Updating the model weights:
             opt.zero_grad()
             loss.backward()
             opt.step()
 
-        # После каждой эпохи тестируем модель:
-        model.eval()  # Переключение модели в режим тестирования
-        current_accuracy = model_test(model)  # Тестирование
+        # After each epoch we test the model:
+        model.eval()  # Switching the model to evaluation mode
+        current_accuracy = model_test(model)  # Testing
 
-        # Обновляем tensorboard:
-        writer.add_scalar("Accuracy", current_accuracy, global_step=epoch)  # Текущая точность модели
-        writer.add_scalar("Loss", epoch_loss, global_step=epoch)  # Суммарный loss за текущую эпоху
+        # Updating tensorboard:
+        writer.add_scalar("Accuracy", current_accuracy, global_step=epoch)  # Current accuracy
+        writer.add_scalar("Loss", epoch_loss, global_step=epoch)  # Total loss for the current epoch
 
-        # Обновляем лучшую точность:
+        # Updating the best accuracy:
         if current_accuracy > best_accuracy:
             best_accuracy = current_accuracy
 
-            # Сохраняем чекпоинт с лучшей точностью, если необходимо:
+            # We save the checkpoint with the best accuracy, if necessary:
             if config.SAVE_BEST_MODEL:
-                print("\033[32m=> Сохранение чекпоинта\033[0m")
+                print("\033[32m=> Saving a checkpoint\033[0m")
 
-                # Создаем директорию для сохранения
+                # Creating a directory to save
                 dir_name = get_current_time()
                 dir_path = os.path.join(config.CHECKPOINT_DIR, dir_name)
                 make_directory(dir_path)
 
-                # Сохраняем
+                # Save
                 model_path = os.path.join(dir_path, config.CHECKPOINT_NAME)
                 save_checkpoint(model, opt, model_path, epoch)
 
@@ -88,16 +88,16 @@ def train(model, opt, data_loader, num_epochs, current_epoch=0, writer=None, cri
 
 
 def main():
-    # Инициализируем модель:
+    # Initializing the model:
     model = Model(model_name=config.MODEL).to(config.DEVICE)
 
-    # Определяем параметры, которые будем обновлять при обучении:
+    # Parameters that we will update during training:
     params_to_update = [param for param in model.parameters() if param.requires_grad]
 
-    # Инициализируем оптимизатор:
+    # Initializing the optimizer:
     opt = optim.Adam(params=params_to_update, lr=config.LEARNING_RATE)
 
-    # Загружаем датасет:
+    # Loading the dataset:
     dataset = CrimeanPlantsDataset(
         root_dir=config.DATASET_DIR,
         csv_file=os.path.join(config.DATASET_DIR, "train_labels.csv"),
@@ -113,18 +113,18 @@ def main():
         pin_memory=True
     )
 
-    current_epoch = 0  # Текущая эпоха обучения
+    current_epoch = 0
 
-    # Загружаем последний чекпоинт модели:
+    # Loading the latest checkpoint:
     if config.LOAD_MODEL:
-        print("\033[32m=> Загрузка последнего чекпоинта\033[0m")
+        print("\033[32m=> Loading the latest checkpoint\033[0m")
 
         checkpoint_path = get_last_checkpoint()
         model, opt, current_epoch = load_checkpoint(model, opt, checkpoint_path)
 
-    num_epochs = config.NUM_EPOCHS  # Количество эпох обучения
+    num_epochs = config.NUM_EPOCHS
 
-    # Обучаем модель:
+    # Training:
     train(model, opt, data_loader, num_epochs, current_epoch=current_epoch)
 
 

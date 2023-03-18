@@ -53,8 +53,8 @@ def main():
     study.optimize(objective, n_trials=100)
 
     trial = study.best_trial
-    print("Лучшая точность: ", trial.value)
-    print("Лучшие гиперпараметры: ")
+    print("Best accuracy: ", trial.value)
+    print("Best hyperparameters: ")
 
     for key, value in trial.params.items():
         print(f"  {key}: {value}")

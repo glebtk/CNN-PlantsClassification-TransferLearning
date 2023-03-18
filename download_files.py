@@ -3,9 +3,9 @@ import zipfile
 import urllib.request
 
 
-# Предустановки
-LOAD_DATASET = True         # Загрузить датасет для обучения
-LOAD_CHECKPOINT = True      # Загрузить чекпоинт с предобученными весами
+# Presets
+LOAD_DATASET = True        # Upload a dataset for training
+LOAD_CHECKPOINT = True     # Upload a checkpoint with pre-trained weights
 
 
 def download_and_unzip(url, path, name):
@@ -30,7 +30,7 @@ def download_files():
         download_and_unzip(url, path, file_name)
         os.remove(os.path.join(path, file_name))
 
-        print("=> Датасет загружен!")
+        print("=> The dataset is loaded!")
 
     if LOAD_CHECKPOINT:
         url = "https://gitlab.com/glebtutik/crimean_plants_classification_files/-/raw/main/checkpoints/plants_model_checkpoint.zip"
@@ -40,7 +40,7 @@ def download_files():
         download_and_unzip(url, path, file_name)
         os.remove(os.path.join(path, file_name))
 
-        print("=> Чекпоинт загружен!")
+        print("=> The checkpoint is loaded!")
 
 
 if __name__ == "__main__":

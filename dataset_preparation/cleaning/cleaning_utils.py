@@ -8,14 +8,14 @@ from PIL import ImageFile
 
 def make_directory(dir_path: str):
     """
-    Описание
+    Description
     ---------
-    Создаёт новую директорию. Если директория уже существует, перезаписывает.
+    Creates a new directory. If the directory already exists, overwrites it.
 
-    Параметры
-    ---------
-    **dir_path:** str
-        Путь, по которому будет создана директория
+        Parameters
+        ---------
+        **dir_path:** str
+            The path where the directory will be created
     """
 
     try:
@@ -27,18 +27,18 @@ def make_directory(dir_path: str):
 
 def verify_image(path: str) -> bool:
     """
-    Описание
+    Description
     ---------
-    Проверяет, является ли файл действительным изображением.
+    Checks if the file is a valid image.
 
-    Параметры
+    Parameters
     ---------
-    **path:** str
-        Путь к изображению
+    **path:** string
+        Image path
 
-    Возвращаемое значение
+    Return value
     ---------
-    bool: Значение, бинарным способом описывающее, является ли файл изображением
+    bool: A binary value describing whether the file is an image
     """
 
     try:
@@ -50,22 +50,22 @@ def verify_image(path: str) -> bool:
 
 def check_filters(path: str, min_size: int = 1, mode: str = "RGB") -> bool:
     """
-    Описание
+    Description
     ---------
-    Проверяет изображение на соответствие фильтрам.
+    Checks an image for compliance with filters.
 
-    Параметры
+    Args
     ---------
     **path:** str
-        Путь к изображению
+        Path to the image
     **min_size:** int
-        Минимальный размер изображения по меньшей стороне
+        Minimum image size on the smaller side
     **mode:** str
-        Цветовой режим
+        Color mode
 
-    Возвращаемое значение
+    Return value
     ---------
-    bool: Значение соответствия (или несоответствия) изображения фильтрам
+    bool: The value of the image's compliance (or non-compliance) with filters
     """
 
     image = Image.open(path)
@@ -77,23 +77,23 @@ def check_filters(path: str, min_size: int = 1, mode: str = "RGB") -> bool:
 
 def remove_duplicates(paths: list, epsilon: int = 1) -> list:
     """
-    Описание
+    Description
     ---------
-    Удаляет из списка пути к одинаковым или похожим изображениям.
+    Removes paths to identical or similar images from the list.
 
-    Параметры
+    Args
     ---------
     **paths:** list
-        Список путей к изображениям
+        List of paths to images
     **epsilon:** int
-        Степень сходства между изображениями
+        The similarity between the images
 
-    Возвращаемое значение
+    Return value
     ---------
-    list: Список путей к уникальным изображениям
+    list: List of paths to unique images
     """
 
-    ImageFile.LOAD_TRUNCATED_IMAGES = True  # Позволяет обрабатывать поврежденные изображения
+    ImageFile.LOAD_TRUNCATED_IMAGES = True  # For process damaged images
 
     hashes = [imagehash.average_hash(Image.open(path)) for path in paths]
 
@@ -112,20 +112,20 @@ def remove_duplicates(paths: list, epsilon: int = 1) -> list:
 
 def resize_image(image: Image, size: int) -> Image:
     """
-    Описание
+    Description
     ---------
-    Изменяет размер изображения.
+    Changes the size of the image.
 
-    Параметры
+    Args
     ---------
     **image:** Image
-        PIL-изображениe.
+        PIL-image.
     **size:** int
-        Целевой размер изображения по меньшей стороне (px)
+        Target image size on the smaller side (px)
 
-    Возвращаемое значение
+    Return value
     ---------
-    Image: Отмасштабированное изображение.
+    Image: Resized image
     """
 
     factor = size / min(image.size)
@@ -135,20 +135,20 @@ def resize_image(image: Image, size: int) -> Image:
 
 def resize_images(images: list, size: int) -> list:
     """
-    Описание
+    Description
     ---------
-    Изменяет размер изображений в списке.
+    Changes the size of the images in the list.
 
-    Параметры
+    Args
     ---------
     **images:** list
-        Список PIL-изображений.
+        List of PIL-images.
     **size:** int
-        Целевой размер изображений по меньшей стороне (px)
+        Target image size on the smaller side (px)
 
-    Возвращаемое значение
+    Return value
     ---------
-    list: Список отмасштабированных изображений
+    list: List of resized images
     """
     resized_images = []
     for image in images:
@@ -161,16 +161,16 @@ def resize_images(images: list, size: int) -> list:
 
 def save_images(images: list, dir_path: str):
     """
-    Описание
+    Description
     ---------
-    Создаёт новую директорию по заданному пути, и сохраняет в нее изображения.
+    Creates a new directory at the specified path, and saves images to it.
 
-    Параметры
+    Args
     ---------
     **images:** list
-        Список PIL-изображений.
+        List of PIL-images.
     **dir_path:** str
-        Путь к директории
+        Path to directory
     """
     make_directory(dir_path)
     for i, image in enumerate(images):

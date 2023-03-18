@@ -14,21 +14,21 @@ class CrimeanPlantsDataset(Dataset):
         if oversampling:
             df_csv = pd.read_csv(csv_file)
 
-            # Находим количество изображений в наиболее полном классе:
+            # Find the number of images in the most complete class:
             max_class_length = df_csv["label"].value_counts().max()
 
-            # Получаем все метки классов:
+            # Getting all class labels:
             class_labels = df_csv["label"].unique()
 
-            # Выравниваем количество изображений в классах путём случайного дублирования:
+            # Equalize the number of images in the classes by random duplication:
             data_csv = pd.DataFrame()
             for label in class_labels:
-                current_class = df_csv.loc[df_csv["label"] == label]  # Все семплы текущего класса
+                current_class = df_csv.loc[df_csv["label"] == label] # All samples of the current class
 
-                add_samples_number = max_class_length - len(current_class)  # Количество семплов, которое нужно добавить
+                add_samples_number = max_class_length - len(current_class)  # Number of samples to add
 
-                # Рандомно выбираем необходимое количество семплов и добавляем к имеющимся:
-                # (replace=True означает, что выбранные семплы могут повторяться)
+                # Randomly select the required number of samples and add them to the existing ones:
+                # (replace=True means that the selected samples can be repeated)
                 current_class_oversampled = pd.concat(
                     [
                         current_class,
@@ -36,7 +36,7 @@ class CrimeanPlantsDataset(Dataset):
                     ]
                 )
 
-                data_csv = pd.concat([data_csv, current_class_oversampled])  # Добавляем класс в общий список
+                data_csv = pd.concat([data_csv, current_class_oversampled])  # Adding the class to the general list
 
             self.data_csv = data_csv
         else:
@@ -48,16 +48,16 @@ class CrimeanPlantsDataset(Dataset):
         return len(self.data_csv)
 
     def __getitem__(self, index):
-        img_path = os.path.join(self.root_dir, self.data_csv.iloc[index, 0])  # Полный путь к изображению
+        img_path = os.path.join(self.root_dir, self.data_csv.iloc[index, 0])  # Full path to the image
 
-        img = read_image(img_path).type(torch.FloatTensor)  # Открываем изображение и конвертируем в тензор
-        img /= 255  # Стандартизация
+        img = read_image(img_path).type(torch.FloatTensor)  # Open the image and convert it to a tensor
+        img /= 255  # Standardization
 
-        # Если нужно, применяем трансформации:
+        # If necessary, apply transformations:
         if self.transform:
             img = self.transform(img)
 
-        label = torch.tensor(self.data_csv.iloc[index, 1])  # Метка класса. int, tensor.
+        label = torch.tensor(self.data_csv.iloc[index, 1])  # Class label. int, tensor.
 
         return img, label
 

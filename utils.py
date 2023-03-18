@@ -1,11 +1,10 @@
 import os
-import random
 import sys
-
-import numpy as np
 import torch
+import random
 import shutil
 import config
+import numpy as np
 
 from datetime import datetime
 from torch.utils.data import DataLoader
@@ -13,7 +12,7 @@ from dataset import CrimeanPlantsDataset
 
 
 def make_directory(dir_path: str) -> None:
-    """Создаёт директорию. Если директория существует - перезаписывает."""
+    """Creates a directory. If the directory exists, it overwrites it."""
 
     try:
         os.makedirs(dir_path)
@@ -23,7 +22,7 @@ def make_directory(dir_path: str) -> None:
 
 
 def save_checkpoint(model, optimizer, model_path, epoch=0) -> None:
-    """Сохраняет чекпоинт модели в процессе обучения (модель, оптимизатор, номер эпохи)."""
+    """Saves the checkpoint in the learning process (model, optimizer, epoch number)."""
 
     checkpoint = {
         "model_state_dict": model.state_dict(),
@@ -34,7 +33,7 @@ def save_checkpoint(model, optimizer, model_path, epoch=0) -> None:
 
 
 def load_checkpoint(model, optimizer, checkpoint_file):
-    """Загружает чекпоинт модели. Возвращает модель, оптимизатор, номер эпохи"""
+    """Loads the checkpoint of the model. Returns model, optimizer, epoch number"""
 
     try:
         checkpoint = torch.load(checkpoint_file, map_location=config.DEVICE)
@@ -43,18 +42,15 @@ def load_checkpoint(model, optimizer, checkpoint_file):
         optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
         epoch = checkpoint["epoch"]
 
-        # for param_group in optimizer.param_groups:
-        #     param_group["lr"] = lr
-
         return model, optimizer, epoch
 
     except FileNotFoundError:
-        print(f"Ошибка: не удалось найти {checkpoint_file}")
+        print(f"Error: couldn't find {checkpoint_file}")
         sys.exit(1)
 
 
 def get_last_checkpoint() -> str:
-    """Возвращает путь к последнему по времени сохранённому чекпоинту."""
+    """Returns the path to the last saved checkpoint."""
     try:
         checkpoints = os.listdir(config.CHECKPOINT_DIR)
         checkpoints = [os.path.join(config.CHECKPOINT_DIR, d) for d in checkpoints]
@@ -65,10 +61,10 @@ def get_last_checkpoint() -> str:
 
         return path_to_model
     except IndexError:
-        print(f"Ошибка: в директории {config.CHECKPOINT_DIR} нет сохраненных чекпоинтов")
+        print(f"Error: there are no saved checkpoints in the {config.CHECKPOINT_DIR} directory")
         sys.exit(1)
     except FileNotFoundError:
-        print(f'Ошибка: не удалось загрузить {config.CHECKPOINT_NAME}')
+        print(f'Error: failed to load {config.CHECKPOINT_NAME}')
         sys.exit(1)
 
 
@@ -77,12 +73,12 @@ def get_current_time() -> str:
 
 
 def model_test(model) -> float:
-    """Проводит тестирование модели на тестовой выборке. Возвращает точность (accuracy)."""
+    """Performs model testing on a test data. Returns accuracy."""
 
     model = model.to(config.DEVICE)
     model.eval()
 
-    # Загружаем датасет
+    # Load dataset
     dataset = CrimeanPlantsDataset(
         root_dir=config.DATASET_DIR,
         csv_file=os.path.join(config.DATASET_DIR, "test_labels.csv"),
@@ -98,21 +94,24 @@ def model_test(model) -> float:
     )
 
     with torch.no_grad():
-        correct = 0  # Счётчик правильных ответов
+        correct = 0  # Counter of correct answers
 
-        # Проходимся циклом по всем батчам в тестовой выборке:
+        # Cycle through all the batches in the test sample:
         for images, labels in data_loader:
             images = images.to(config.DEVICE)
             labels = labels.to(config.DEVICE)
 
-            predictions = model(images)  # Получаем предсказания на текущих изображениях
+            # Getting predictions on current images:
+            predictions = model(images)
+
 
             for prediction, label in zip(predictions, labels):
-                # Если предсказание правильное,
+                # If the prediction is correct,
                 if torch.argmax(torch.softmax(prediction, dim=0)) == label:
-                    correct += 1  # засчитываем правильный ответ
+                    correct += 1  # we count the correct answer
 
-    accuracy = correct / len(dataset)  # Точность = количество правильных ответов / общее количество изображений
+    # Accuracy = (number of correct answers) / (total number of images):
+    accuracy = correct / len(dataset)
 
     return accuracy
 

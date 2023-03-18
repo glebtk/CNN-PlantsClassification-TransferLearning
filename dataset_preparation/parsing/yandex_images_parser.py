@@ -77,37 +77,39 @@ class Parser:
                      image_format: Format = None,
                      site: str = None) -> list:
         """
-        Описание
+        Description
         ---------
-        Реализует функцию поиска по запросу в Яндекс Картинках.
+        Implements the search function by query in Yandex Images.
 
-        Параметры
+        Args
         ---------
         **query:** str
-                Текст запроса
+                Query text
         **limit:** int
-                Требуемое (максимальное) количество изображений
+                Required (maximum) number of images
         **delay:** float
-                Время задержки между запросами (сек)
+                Delay time between requests (sec)
         **size:** Size
-                Размер (большие, маленькие, средние)
+                Size (large, small, medium)
         **orientation:** Orientation
-                Ориентация (горизонтальная, вертикальная, квадрат)
+                Orientation (horizontal, vertical, square)
         **image_type:** ImageType
-                Тип искомых изображений (фото, лица, с белым фоном, ... )
+                The type of images you are looking for (photos, faces, cliparts, ... )
         **color:** Color
-                Цветовая гамма (ч/б, цветные, оранжевые, синие, ... )
+                Color scheme (b/w, colored, orange, blue, ... )
         **image_format:** Format
-                Формат изображений (jpg, png, gif)
+                Format (jpg, png, gif)
         **site:** str
-                Сайт, на котором расположены изображения
+                The site where the images are located
 
-        Возвращаемое значение
+        Return value
         ---------
-        list: Список URL-ссылок на изображения соответствующие запросу.
+        list: A list of URL to images matching the query.
         """
 
-        # Подготавливаем параметры запроса:
+
+
+        # Preparing the request parameters:
         params = {"text": query,
                   "isize": size,
                   "iorient": orientation,
@@ -119,7 +121,7 @@ class Parser:
                   "noreask": 1,
                   "p": 0}
 
-        # Выполняем поиск и возвращаем результат:
+        # Perform a search and return the result:
         return self.__get_images(params=params, limit=limit, delay=delay)
 
     def image_search(self,
@@ -132,35 +134,35 @@ class Parser:
                      image_format: Format = None,
                      site: str = None) -> list:
         """
-        Описание
+        Description
         ---------
-        Реализует функцию поиска по изображению в Яндекс Картинках.
+        Implements a function for searching for similar images in Yandex Images.
 
         Параметры
         ---------
         **url:** str
-                URL-ссылка на изображение
+                URL of the image
         **limit:** int
-                Требуемое (максимальное) количество изображений
+                Required (maximum) number of images
         **delay:** float
-                Время задержки между запросами (сек)
+                Delay time between requests (sec)
         **size:** Size
-                Размер (большие, маленькие, средние)
+                Size (large, small, medium)
         **orientation:** Orientation
-                Ориентация (горизонтальная, вертикальная, квадрат)
+                Orientation (horizontal, vertical, square)
         **color:** Color
-                Цветовая гамма (ч/б, цветные, оранжевые, синие, ... )
+                Color scheme (b/w, colored, orange, blue, ... )
         **image_format:** Format
-                Формат изображений (jpg, png, gif, ... )
+                Format (jpg, png, gif)
         **site:** str
-                Сайт, на котором расположены изображения
+                The site where the images are located
 
-        Возвращаемое значение
+        Return value
         ---------
-        list: Список URL-ссылок на похожие изображения.
+        list: A list of URL to similar images.
         """
 
-        # Подготавливаем параметры запроса:
+        # Preparing the request parameters:
         params = {"url": url,
                   "isize": size,
                   "iorient": orientation,
@@ -171,53 +173,53 @@ class Parser:
                   "cbir_page": "similar",
                   "p": 0}
 
-        # Выполняем поиск и возвращаем результат:
+        # Perform a search and return the result:
         return self.__get_images(params=params, limit=limit, delay=delay)
 
     def __get_images(self, params: dict, limit: int, delay: float) -> list:
         """
-        Описание
+        Description
         ---------
-        Возвращает заданное количество прямых URL-ссылок на
-        изображения, соответствующие параметрам запроса.
+        Returns the specified number of direct URL to
+        images corresponding to the request parameters.
 
-        Параметры
+        Parameters
         ---------
         **params:** dict
-                Параметры запроса
+                Request parameters
         **limit:** int
-                Требуемое (максимальное) количество изображений
+                Required (maximum) number of images
         **delay:** float
-                Время задержки между запросами (сек)
+                Delay time between requests (sec)
 
-        Возвращаемое значение
+        Return value
         ---------
-        list: Список URL-ссылок на изображения.
+        list: A list of URL to images.
         """
 
-        request = self.__prepare_request(params)  # Подготавливаем запрос
+        request = self.__prepare_request(params)  # Prepare request
 
         try:
             options = webdriver.FirefoxOptions()
             options.add_argument('--headless')
             driver = webdriver.Firefox(executable_path="geckodriver/geckodriver.exe", options=options)
         except SessionNotCreatedException as e:
-            print(f"Ошибка: \033[91mSessionNotCreatedException.\033[0m Возможно, не установлен FireFox. \n\n{e.msg}")
+            print(f"Ошибка: \033[91mSessionNotCreatedException.\033[0m FireFox may not be installed. \n\n{e.msg}")
             raise SystemExit(1)
 
         try:
             driver.get(request.url)
         except WebDriverException as e:
-            print(f"Ошибка: \033[91mWebDriverException.\033[0m \n\n{e.msg}")
+            print(f"Error: \033[91mWebDriverException.\033[0m \n\n{e.msg}")
             raise SystemExit(1)
 
         pbar = tqdm(total=limit)
         while True:
             html = driver.page_source
-            images = self.__parse_html(html)  # Вытаскиваем из html-кода прямые ссылки на изображения
+            images = self.__parse_html(html)  # Direct links extracting from the html code
 
             if len(images) == 0:
-                pbar.set_postfix_str("Что-то пошло не так... Найдено 0 изображений.")
+                pbar.set_postfix_str("Something went wrong... no images found.")
                 break
 
             pbar.n = len(images) if len(images) <= limit else limit
@@ -240,7 +242,7 @@ class Parser:
                         print(f"Ошибка: {e.msg}")
                         break
                     except ElementNotInteractableException:
-                        pbar.set_postfix_str("Найдено меньше изображений")
+                        pbar.set_postfix_str("Fewer images found")
                         break
                     except:
                         break
@@ -252,25 +254,25 @@ class Parser:
 
     def __prepare_request(self, params: dict) -> PreparedRequest:
         """
-        Описание
+        Description
         ---------
-        Подготавливает GET-запрос к Яндекс Картинкам с полученными параметрами
-        и сгенерированными заголовками.
+        Prepares a GET request to Yandex Images with the received parameters
+        and generated headers.
 
-        Параметры
+        Args
         ---------
         **params:** dict
-                Параметры GET-запроса.
+                GET-request parameters.
 
-        Возвращаемое значение
+        Return values
         ---------
-        PreparedRequest: Подготовленный GET-запрос.
+        PreparedRequest: Prepared GET-request.
         """
 
-        params = {k: v for k, v in params.items() if v is not None}  # Удаляем все неиспользуемые параметры
-        headers = Headers(headers=True).generate()  # Генерируем заголовки
+        params = {k: v for k, v in params.items() if v is not None}  # Deleting all unused parameters
+        headers = Headers(headers=True).generate()  # Generating headers
 
-        # Получаем подготовленный запрос (PreparedRequest)
+        # Receive a prepared request (Prepared Request)
         request = requests.Request(method="GET",
                                    url="https://yandex.ru/images/search",
                                    params=params,
@@ -279,18 +281,18 @@ class Parser:
 
     def __parse_html(self, html: str) -> list:
         """
-        Описание
+        Description
         ---------
-        Достаёт из html-кода страницы прямые ссылки на изображения.
+        Extracts direct links to images from the html code of the page.
 
-        Параметры
+        Args
         ---------
         **html:** str
-                html-код страницы с изображениями.
+                html code of the page with images.
 
-        Возвращаемое значение
+        Return value
         ---------
-        list: Список прямых URL-ссылок на изображения со страницы.
+        list: A list of direct URL to images from the page.
         """
 
         soup = BeautifulSoup(html, "lxml")

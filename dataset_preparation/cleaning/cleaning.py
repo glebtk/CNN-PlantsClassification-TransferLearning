@@ -19,31 +19,31 @@ def main():
         source_dir = os.path.join(images_dir, dir_name)
 
         if os.path.isdir(source_dir):
-            print(f"\033[32m\033[1mОбработка:\033[0m {dir_name}.")
+            print(f"\033[32m\033[1mProcessing:\033[0m {dir_name}.")
 
-            images_names = os.listdir(source_dir)  # Список имён изображений в директории
+            images_names = os.listdir(source_dir)  # List of image names in the directory
 
-            # Получаем пути к изображениям:
+            # Getting paths to images:
             paths_to_images = [os.path.join(source_dir, name) for name in images_names]
 
-            # Проверяем, лежат ли по путям именно изображения:
+            # Check whether it is the images that lie along the paths:
             paths_to_images = [path for path in paths_to_images if verify_image(path)]
 
-            # Проверяем, удовлетворяют ли эти изображения условиям (размер, цветовой режим):
+            # Check whether these images meet the conditions (size, color mode):
             paths_to_images = [path for path in paths_to_images if check_filters(path, min_size=256, mode="RGB")]
 
-            # Удаляем дубликаты:
+            # Removing duplicates:
             paths_to_images = remove_duplicates(paths_to_images, epsilon=8)
 
-            # Открываем изображения и изменяем их размер до 256px по меньшей стороне:
+            # Open the images and resize them to 256px on the smaller side:
             images = [Image.open(path) for path in paths_to_images]
             images = [resize_image(img, size=256) for img in images]
 
-            # Сохраняем:
+            # Save:
             output_dir = os.path.join(dataset_dir, dir_name)
             save_images(images, dir_path=output_dir)
 
-            print(f"Успешно обработано изображений: [{len(images)} / {len(images_names)}].\n")
+            print(f"Successfully processed images: [{len(images)} / {len(images_names)}].\n")
 
 
 if __name__ == "__main__":

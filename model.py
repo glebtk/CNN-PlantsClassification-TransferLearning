@@ -18,11 +18,11 @@ class Model(nn.Module):
             alexnet = models.alexnet(weights=AlexNet_Weights.IMAGENET1K_V1)
 
             if freeze:
-                # "Замораживаем" градиенты в feature extractor сети:
+                # "Freezing" gradients in the feature extractor:
                 for param in alexnet.features.parameters():
                     param.requires_grad = False
 
-            # Заменяем последний слой:
+            # Replacing the last layer:
             in_features = alexnet.classifier[-1].in_features
             alexnet.classifier[-1] = nn.Linear(in_features=in_features, out_features=config.OUT_FEATURES)
 
@@ -32,11 +32,11 @@ class Model(nn.Module):
             convnext = models.convnext_tiny(weights=ConvNeXt_Tiny_Weights.IMAGENET1K_V1)
 
             if freeze:
-                # "Замораживаем" градиенты в feature extractor сети:
+                # "Freezing" gradients in the feature extractor:
                 for param in convnext.features.parameters():
                     param.requires_grad = False
 
-            # Заменяем последний слой:
+            # Replacing the last layer:
             in_features = convnext.classifier[-1].in_features
             convnext.classifier[-1] = nn.Linear(in_features=in_features, out_features=config.OUT_FEATURES)
 
@@ -46,11 +46,11 @@ class Model(nn.Module):
             densenet121 = models.densenet121(weights=DenseNet121_Weights.IMAGENET1K_V1)
 
             if freeze:
-                # "Замораживаем" все слои нейросети:
+                # "Freeze" all layers of the neural network:
                 for param in densenet121.features.parameters():
                     param.requires_grad = False
 
-            # Заменяем классификатор:
+            # Replacing the classifier:
             in_features = densenet121.classifier.in_features
             densenet121.classifier = nn.Sequential(
                 nn.Linear(in_features=in_features, out_features=int(in_features / 2)),
@@ -68,11 +68,11 @@ class Model(nn.Module):
             densenet201 = models.densenet201(weights=DenseNet201_Weights.IMAGENET1K_V1)
 
             if freeze:
-                # "Замораживаем" все слои нейросети:
+                # "Freeze" all layers of the neural network:
                 for param in densenet201.features.parameters():
                     param.requires_grad = False
 
-            # Заменяем классификатор:
+            # Replacing the classifier:
             in_features = densenet201.classifier.in_features
             densenet201.classifier = nn.Sequential(
                 nn.Linear(in_features=in_features, out_features=int(in_features / 2)),
@@ -90,11 +90,11 @@ class Model(nn.Module):
             resnet18 = models.resnet18(weights=ResNet18_Weights.DEFAULT)
 
             if freeze:
-                # "Замораживаем" все слои нейросети:
+                # "Freeze" all layers of the neural network:
                 for param in resnet18.parameters():
                     param.requires_grad = False
 
-            # Заменяем последний слой:
+            # Replacing the last layer:
             in_features = resnet18.fc.in_features
             resnet18.fc = nn.Linear(in_features=in_features, out_features=config.OUT_FEATURES)
 
@@ -104,11 +104,11 @@ class Model(nn.Module):
             mobilenet = models.mobilenet_v3_small(weights=MobileNet_V3_Small_Weights.IMAGENET1K_V1)
 
             if freeze:
-                # "Замораживаем" градиенты в feature extractor сети:
+                # "Freezing" gradients in the feature extractor:
                 for param in mobilenet.features.parameters():
                     param.requires_grad = False
 
-            # Заменяем последний слой:
+            # Replacing the last layer:
             in_features = mobilenet.classifier[-1].in_features
             mobilenet.classifier[-1] = nn.Linear(in_features=in_features, out_features=config.OUT_FEATURES)
 
@@ -118,11 +118,11 @@ class Model(nn.Module):
             mobilenet = models.mobilenet_v3_large(weights=MobileNet_V3_Large_Weights.IMAGENET1K_V1)
 
             if freeze:
-                # "Замораживаем" градиенты в feature extractor сети:
+                # "Freezing" gradients in the feature extractor:
                 for param in mobilenet.features.parameters():
                     param.requires_grad = False
 
-            # Заменяем последний слой:
+            # Replacing the last layer:
             in_features = mobilenet.classifier[-1].in_features
             mobilenet.classifier[-1] = nn.Linear(in_features=in_features, out_features=config.OUT_FEATURES)
 
