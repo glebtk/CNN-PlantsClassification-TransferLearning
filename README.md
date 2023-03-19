@@ -48,7 +48,7 @@ which downloads the checkpoint and the dataset:
 │   │   │   └── geckodriver.exe                 # Driver for controlling FireFox
 │   │   ├── parsing.py                          
 │   │   ├── parsing_utils.py                    # Utilities required for parsing
-│   │   └── yandex_images_parser.py             # Parser. (My parser project - gitlab.com/glebtutik/yandex_images_parser)
+│   │   └── yandex_images_parser.py             # Parser. (My parser project - github.com/glebtk/yandex_images_parser)
 │   ├── cleaning                                 
 │   │   ├── cleaning.py                         # Script for cleaning the dataset
 │   │   └── cleaning_utils.py                   # Utilities required for cleaning the dataset
